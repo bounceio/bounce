@@ -1,0 +1,9 @@
+---
+formatter.name: pretty
+suites:
+  default:
+    namespace: Bounce\Bounce
+    psr4_prefix: Bounce\Bounce
+    src_path: %paths.config%/src
+    spec_path: %paths.config%/tests
+...
