@@ -1,0 +1,28 @@
+{
+  "name": "bounce/bounce",
+  "description": "PHP 7 event emitter allowing for event queues, middleware, and fuzzy event matching",
+  "type": "library",
+  "keywords": ["event", "emitter", "event bus"],
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Barney Hanlon",
+      "email": "barney@shrikeh.net"
+    }
+  ],
+  "require": {
+    "eventbus-interop/eventbus-interop": "^0.1"
+  },
+  "require-dev": {
+    "behat/behat": "^3.3",
+    "phpspec/phpspec": "^4.0",
+    "escapestudios/symfony2-coding-standard": "^3.0"
+  },
+  "prefer-stable": true,
+  "config": {
+    "bin-dir": "bin"
+  },
+  "archive": {
+    "exclude": ["*", "!/src"]
+  }
+}
