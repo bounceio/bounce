@@ -15,6 +15,11 @@
       "Bounce\\Bounce\\": "src"
     }
   },
+  "autoload-dev": {
+    "psr-4": {
+      "Features\\Bounce\\Bounce\\": "tests/behat/bootstrap"
+    }
+  },
   "require": {
     "php": ">= 7.1",
     "eventbus-interop/eventbus-interop": "^0.1"
