@@ -1,5 +1,11 @@
 <?php
-
+/**
+ * @author       Barney Hanlon <barney@shrikeh.net>
+ *
+ * @copyright    Barney Hanlon 2017-09-01
+ *
+ * @license      https://opensource.org/licenses/MIT
+ */
 namespace Bounce\Bounce;
 
 use EventIO\InterOp\EmitterInterface;
@@ -9,12 +15,12 @@ use EventIO\InterOp\ListenerInterface;
 
 /**
  * Class Emitter
- * @package Bounce\Bounce
  */
 class Emitter implements EmitterInterface, ListenerAcceptorInterface
 {
     /**
      * @param array ...$events The event triggered
+     *
      * @return mixed
      */
     public function emit(...$events)
@@ -24,6 +30,7 @@ class Emitter implements EmitterInterface, ListenerAcceptorInterface
 
     /**
      * @param EventInterface $event The event triggered
+     *
      * @return mixed
      */
     public function emitEvent(EventInterface $event)
@@ -33,6 +40,7 @@ class Emitter implements EmitterInterface, ListenerAcceptorInterface
 
     /**
      * @param string $event The event name to emit
+     *
      * @return mixed
      */
     public function emitName($event)
@@ -41,17 +49,17 @@ class Emitter implements EmitterInterface, ListenerAcceptorInterface
     }
 
     /**
-     * @param string $eventName The name of the event to listen for
-     * @param callable|ListenerInterface $listener A listener or callable
-     * @param int $priority Used to prioritise listeners for the same event
+     * @param string                     $eventName The name of the event to listen for
+     * @param callable|ListenerInterface $listener  A listener or callable
+     * @param int                        $priority  Used to prioritise listeners for the same event
+     *
      * @return mixed
      */
     public function addListener(
         $eventName,
         $listener,
         $priority = self::PRIORITY_NORMAL
-    )
-    {
+    ) {
         // TODO: Implement addListener() method.
     }
 }
