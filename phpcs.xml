@@ -5,5 +5,4 @@
     <rule ref="vendor/escapestudios/symfony2-coding-standard">
         <exclude name="Symfony.Functions.Arguments.Invalid" />
     </rule>
-
 </ruleset>
