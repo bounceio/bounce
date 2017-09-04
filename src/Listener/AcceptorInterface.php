@@ -1,11 +1,19 @@
 <?php
 namespace Bounce\Bounce\Listener;
 
-interface AcceptorInterface
+use EventIO\InterOp\EventInterface;
+use EventIO\InterOp\ListenerAcceptorInterface;
+
+/**
+ * Interface AcceptorInterface
+ * @package Bounce\Bounce\Listener
+ */
+interface AcceptorInterface extends ListenerAcceptorInterface
 {
 
-
-    public function addListener($argument1, $argument2, $argument3);
-
-    public function listenersFor($argument1);
+    /**
+     * @param EventInterface $event
+     * @return mixed
+     */
+    public function listenersFor(EventInterface $event);
 }
