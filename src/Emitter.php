@@ -8,6 +8,7 @@
  */
 namespace Bounce\Bounce;
 
+use Bounce\Bounce\Listener\AcceptorInterface;
 use EventIO\InterOp\EmitterInterface;
 use EventIO\InterOp\EventInterface;
 use EventIO\InterOp\ListenerAcceptorInterface;
@@ -18,6 +19,21 @@ use EventIO\InterOp\ListenerInterface;
  */
 class Emitter implements EmitterInterface, ListenerAcceptorInterface
 {
+    /**
+     * @var AcceptorInterface
+     */
+    private $acceptor;
+
+    /**
+     * Emitter constructor.
+     * @param AcceptorInterface $acceptor
+     */
+    public function __construct(AcceptorInterface $acceptor)
+    {
+        $this->acceptor = $acceptor;
+    }
+
+
     /**
      * @param array ...$events The event triggered
      *
@@ -35,7 +51,9 @@ class Emitter implements EmitterInterface, ListenerAcceptorInterface
      */
     public function emitEvent(EventInterface $event)
     {
-        // TODO: Implement emitEvent() method.
+        foreach ($this->acceptor->listenersFor($event) as $listener) {
+            $listener->handle($event);
+        }
     }
 
     /**
@@ -60,6 +78,6 @@ class Emitter implements EmitterInterface, ListenerAcceptorInterface
         $listener,
         $priority = self::PRIORITY_NORMAL
     ) {
-        // TODO: Implement addListener() method.
+        $this->acceptor->addListener($eventName, $listener, $priority);
     }
 }
