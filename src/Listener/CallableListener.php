@@ -1,12 +1,17 @@
 <?php
+/**
+ * @author       Barney Hanlon <barney@shrikeh.net>
+ * @copyright    Barney Hanlon 2017
+ * @license      https://opensource.org/licenses/MIT
+ */
+
 namespace Bounce\Bounce\Listener;
 
 use EventIO\InterOp\EventInterface;
 use EventIO\InterOp\ListenerInterface;
 
 /**
- * Class CallableListener
- * @package Shrikeh\Bounce\Listener
+ * Class CallableListener.
  */
 class CallableListener implements ListenerInterface
 {
@@ -17,7 +22,8 @@ class CallableListener implements ListenerInterface
 
     /**
      * CallableListener constructor.
-     * @param callable $listener A lambda or invokable object to handle the event.
+     *
+     * @param callable $listener a lambda or invokable object to handle the event
      */
     public function __construct(callable $listener)
     {
@@ -28,8 +34,6 @@ class CallableListener implements ListenerInterface
      * Handle an event.
      *
      * @param EventInterface $event The event being emitted
-     *
-     * @return void
      */
     public function handle(EventInterface $event)
     {

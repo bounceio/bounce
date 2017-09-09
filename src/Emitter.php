@@ -1,11 +1,10 @@
 <?php
 /**
  * @author       Barney Hanlon <barney@shrikeh.net>
- *
- * @copyright    Barney Hanlon 2017-09-01
- *
+ * @copyright    Barney Hanlon 2017
  * @license      https://opensource.org/licenses/MIT
  */
+
 namespace Bounce\Bounce;
 
 use Bounce\Bounce\Acceptor\AcceptorInterface;
@@ -15,7 +14,7 @@ use EventIO\InterOp\ListenerAcceptorInterface;
 use EventIO\InterOp\ListenerInterface;
 
 /**
- * Class Emitter
+ * Class Emitter.
  */
 class Emitter implements EmitterInterface, ListenerAcceptorInterface
 {
@@ -26,13 +25,13 @@ class Emitter implements EmitterInterface, ListenerAcceptorInterface
 
     /**
      * Emitter constructor.
+     *
      * @param AcceptorInterface $acceptor
      */
     public function __construct(AcceptorInterface $acceptor)
     {
         $this->acceptor = $acceptor;
     }
-
 
     /**
      * @param array ...$events The event triggered
@@ -41,7 +40,7 @@ class Emitter implements EmitterInterface, ListenerAcceptorInterface
      */
     public function emit(...$events)
     {
-        foreach($events as $event) {
+        foreach ($events as $event) {
             $this->emitEvent($event);
         }
     }

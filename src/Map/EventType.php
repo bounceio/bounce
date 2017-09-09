@@ -1,11 +1,16 @@
 <?php
+/**
+ * @author       Barney Hanlon <barney@shrikeh.net>
+ * @copyright    Barney Hanlon 2017
+ * @license      https://opensource.org/licenses/MIT
+ */
+
 namespace Shrikeh\Bounce\Event\Map;
 
 use EventIO\InterOp\EventInterface;
 
 /**
- * Class EventType
- * @package Shrikeh\Bounce\Event\Map
+ * Class EventType.
  */
 final class EventType implements MapInterface
 {
@@ -16,6 +21,7 @@ final class EventType implements MapInterface
 
     /**
      * EventType constructor.
+     *
      * @param string $eventType A class type to look for
      */
     public function __construct(string $eventType)
@@ -41,7 +47,7 @@ final class EventType implements MapInterface
     public function isMatch(EventInterface $event): bool
     {
         // see https://veewee.github.io/blog/optimizing-php-performance-by-fq-function-calls/
-        return (\is_a($event, $this->eventType));
+        return \is_a($event, $this->eventType);
     }
 
     /**
@@ -49,6 +55,6 @@ final class EventType implements MapInterface
      */
     public function index(): string
     {
-        return (string) (self::class . '|' . $this);
+        return (string) (self::class.'|'.$this);
     }
 }

@@ -1,4 +1,9 @@
 <?php
+/**
+ * @author       Barney Hanlon <barney@shrikeh.net>
+ * @copyright    Barney Hanlon 2017
+ * @license      https://opensource.org/licenses/MIT
+ */
 
 namespace Bounce\Bounce\Acceptor;
 
@@ -22,7 +27,8 @@ class Acceptor implements AcceptorInterface
 
     /**
      * Acceptor constructor.
-     * @param AcceptorMiddlewareInterface $middleware
+     *
+     * @param AcceptorMiddlewareInterface       $middleware
      * @param MappedListenerCollectionInterface $mappedListeners
      */
     public function __construct(
@@ -35,6 +41,7 @@ class Acceptor implements AcceptorInterface
 
     /**
      * @param EventInterface $event
+     *
      * @return Traversable
      */
     public function listenersFor(EventInterface $event): Traversable
@@ -43,9 +50,10 @@ class Acceptor implements AcceptorInterface
     }
 
     /**
-     * @param string $eventName The name of the event to listen for
-     * @param callable|ListenerInterface $listener A listener or callable
-     * @param int $priority Used to prioritise listeners for the same event
+     * @param string                     $eventName The name of the event to listen for
+     * @param callable|ListenerInterface $listener  A listener or callable
+     * @param int                        $priority  Used to prioritise listeners for the same event
+     *
      * @return mixed
      */
     public function addListener(

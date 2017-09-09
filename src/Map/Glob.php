@@ -1,11 +1,16 @@
 <?php
+/**
+ * @author       Barney Hanlon <barney@shrikeh.net>
+ * @copyright    Barney Hanlon 2017
+ * @license      https://opensource.org/licenses/MIT
+ */
+
 namespace Shrikeh\Bounce\Event\Map;
 
 use EventIO\InterOp\EventInterface;
 
 /**
- * Class Glob
- * @package Shrikeh\Bounce\Event\Map
+ * Class Glob.
  */
 final class Glob implements MapInterface
 {
@@ -16,6 +21,7 @@ final class Glob implements MapInterface
 
     /**
      * Glob constructor.
+     *
      * @param string $globPattern A glob pattern
      */
     public function __construct(string $globPattern)
@@ -33,6 +39,7 @@ final class Glob implements MapInterface
 
     /**
      * @param EventInterface $event The event to test
+     *
      * @return bool
      */
     public function isMatch(EventInterface $event): bool
@@ -46,6 +53,6 @@ final class Glob implements MapInterface
      */
     public function index(): string
     {
-        return (string) (self::class . '|' . $this);
+        return (string) (self::class.'|'.$this);
     }
 }
