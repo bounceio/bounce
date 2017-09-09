@@ -7,7 +7,6 @@
 
 namespace Bounce\Bounce\MappedListener;
 
-use EventIO\InterOp\ListenerInterface;
 use Shrikeh\Bounce\Event\Map\MapInterface;
 
 /**
@@ -15,7 +14,31 @@ use Shrikeh\Bounce\Event\Map\MapInterface;
  */
 interface MappedListenerInterface
 {
+    const HIGHER_PRIORITY = -1;
+    const SAME_PRIORITY = 0;
+    const LOWER_PRIORITY = 1;
+
+    /**
+     * @return MapInterface
+     */
     public function map(): MapInterface;
 
-    public function listener(): ListenerInterface;
+    /**
+     * @param $event
+     *
+     * @return bool
+     */
+    public function matches($event): bool;
+
+    /**
+     * @return mixed
+     */
+    public function listener();
+
+    /**
+     * @param MappedListenerInterface $mappedListener
+     *
+     * @return int
+     */
+    public function compare(MappedListenerInterface $mappedListener): int;
 }
