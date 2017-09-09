@@ -1,0 +1,28 @@
+<?php
+namespace Bounce\Bounce\Middleware\Acceptor;
+
+use Bounce\Bounce\MappedListener\MappedListenerInterface;
+use EventIO\InterOp\EventInterface;
+use Traversable;
+
+/**
+ * Interface AcceptorMiddlewareInterface
+ * @package Bounce\Bounce\Middleware\Acceptor
+ */
+interface AcceptorMiddlewareInterface
+{
+    /**
+     * @param $map
+     * @param $listener
+     * @param $priority
+     * @return MappedListenerInterface
+     */
+    public function listenerAdd($map, $listener, $priority): MappedListenerInterface;
+
+    /**
+     * @param EventInterface $event
+     * @param $listeners
+     * @return Traversable
+     */
+    public function listenersFor(EventInterface $event, $listeners): Traversable;
+}

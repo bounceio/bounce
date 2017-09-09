@@ -8,10 +8,7 @@ use Bounce\Bounce\Listener\CallableListener;
 use EventIO\InterOp\EmitterInterface;
 use EventIO\InterOp\EventInterface;
 use EventIO\InterOp\ListenerAcceptorInterface;
-use EventIO\InterOp\ListenerInterface;
 use PhpSpec\ObjectBehavior;
-use Prophecy\Argument;
-use Traversable;
 
 class EmitterSpec extends ObjectBehavior
 {
