@@ -25,6 +25,7 @@ class MappedListenersSpec extends ObjectBehavior
 
         $mappedListener->listener()->willReturn($listener);
         $mappedListener->matches($event)->willReturn(true);
+        $mappedListener->priority()->willReturn(AcceptorInterface::PRIORITY_NORMAL);
 
         $this->beConstructedThroughCreate();
         $this->add($mappedListener);
@@ -42,8 +43,8 @@ class MappedListenersSpec extends ObjectBehavior
         $firstMappedListener->matches($event)->willReturn(true);
         $secondMappedListener->matches($event)->willReturn(true);
 
-        $firstMappedListener->compare($secondMappedListener)->willReturn(MappedListenerInterface::HIGHER_PRIORITY);
-        $secondMappedListener->compare($firstMappedListener)->willReturn(MappedListenerInterface::LOWER_PRIORITY);
+        $firstMappedListener->priority()->willReturn(AcceptorInterface::PRIORITY_HIGH);
+        $secondMappedListener->priority()->willReturn(AcceptorInterface::PRIORITY_NORMAL);
 
         $firstMappedListener->listener()->willReturn($firstListener);
         $secondMappedListener->listener()->willReturn($secondListener);

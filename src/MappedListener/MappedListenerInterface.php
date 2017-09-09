@@ -41,4 +41,9 @@ interface MappedListenerInterface
      * @return int
      */
     public function compare(MappedListenerInterface $mappedListener): int;
+
+    /**
+     * @return mixed
+     */
+    public function priority();
 }

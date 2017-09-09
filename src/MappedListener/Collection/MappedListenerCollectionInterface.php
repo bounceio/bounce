@@ -9,6 +9,7 @@ namespace Bounce\Bounce\MappedListener\Collection;
 
 use Bounce\Bounce\MappedListener\MappedListenerInterface;
 use EventIO\InterOp\EventInterface;
+use Traversable;
 
 /**
  * Interface MappedListenerCollectionInterface.
@@ -27,5 +28,5 @@ interface MappedListenerCollectionInterface
      *
      * @return mixed
      */
-    public function listenersFor(EventInterface $event);
+    public function listenersFor(EventInterface $event): Traversable;
 }

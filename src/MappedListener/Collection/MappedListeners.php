@@ -3,9 +3,15 @@
 namespace Bounce\Bounce\MappedListener\Collection;
 
 use Bounce\Bounce\MappedListener\MappedListenerInterface;
+use Bounce\Bounce\MappedListener\Queue\PriorityQueue;
 use EventIO\InterOp\EventInterface;
 use SplObjectStorage;
+use Traversable;
 
+/**
+ * Class MappedListeners
+ * @package Bounce\Bounce\MappedListener\Collection
+ */
 class MappedListeners implements MappedListenerCollectionInterface
 {
     /**
@@ -33,9 +39,7 @@ class MappedListeners implements MappedListenerCollectionInterface
     }
 
     /**
-     * @param MappedListenerInterface $mappedListener
-     *
-     * @return mixed
+     * {@inheritdoc}
      */
     public function add(MappedListenerInterface $mappedListener)
     {
@@ -43,28 +47,17 @@ class MappedListeners implements MappedListenerCollectionInterface
     }
 
     /**
-     * @param EventInterface $event
-     *
-     * @return mixed
+     * {@inheritdoc}
      */
-    public function listenersFor(EventInterface $event)
+    public function listenersFor(EventInterface $event): Traversable
     {
-        $listeners = [];
+        $queue = new PriorityQueue();
         foreach ($this->mappedListeners as $mappedListener) {
             if ($mappedListener->matches($event)) {
-                $listeners[] = $mappedListener;
+                $queue->queue($mappedListener);
             }
         }
 
-        usort($listeners, function (
-            MappedListenerInterface $mappedListenerA,
-            MappedListenerInterface $mappedListenerB
-        ) {
-            return $mappedListenerA->compare($mappedListenerB);
-        });
-
-        foreach ($listeners as $listener) {
-            yield $listener->listener();
-        }
+        yield from $queue->listeners();
     }
 }
