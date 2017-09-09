@@ -19,31 +19,38 @@ class MappedListeners implements MappedListenerCollectionInterface
      */
     private $mappedListeners;
 
-    public static function create(SplObjectStorage $mappedListeners = null): self
+    /**
+     * @param MappedListenerInterface[] ...$mappedListeners
+     * @return MappedListeners
+     */
+    public static function create(MappedListenerInterface ...$mappedListeners): self
     {
-        if (null === $mappedListeners) {
-            $mappedListeners = new SplObjectStorage();
-        }
-
         return new self($mappedListeners);
     }
 
     /**
      * MappedListeners constructor.
-     *
-     * @param SplObjectStorage $mappedListeners
+     * @param array $mappedListeners
      */
-    private function __construct(SplObjectStorage $mappedListeners)
+    private function __construct(array $mappedListeners = [])
     {
-        $this->mappedListeners = $mappedListeners;
+        $this->mappedListeners = new SplObjectStorage();
+
+        foreach ($mappedListeners as $mappedListener) {
+            $this->add($mappedListener);
+        }
     }
 
     /**
      * {@inheritdoc}
      */
-    public function add(MappedListenerInterface $mappedListener)
+    public function add(MappedListenerInterface ...$mappedListeners)
     {
-        $this->mappedListeners->attach($mappedListener);
+        foreach ($mappedListeners as $mappedListener) {
+            $this->mappedListeners->attach($mappedListener);
+        }
+
+        return $this;
     }
 
     /**

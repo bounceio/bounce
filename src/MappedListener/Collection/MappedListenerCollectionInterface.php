@@ -17,11 +17,10 @@ use Traversable;
 interface MappedListenerCollectionInterface
 {
     /**
-     * @param MappedListenerInterface $mappedListener
-     *
+     * @param MappedListenerInterface[] ...$mappedListener
      * @return mixed
      */
-    public function add(MappedListenerInterface $mappedListener);
+    public function add(MappedListenerInterface ...$mappedListener);
 
     /**
      * @param EventInterface $event
