@@ -8,7 +8,7 @@
  */
 namespace Bounce\Bounce;
 
-use Bounce\Bounce\Listener\AcceptorInterface;
+use Bounce\Bounce\Acceptor\AcceptorInterface;
 use EventIO\InterOp\EmitterInterface;
 use EventIO\InterOp\EventInterface;
 use EventIO\InterOp\ListenerAcceptorInterface;
@@ -41,7 +41,9 @@ class Emitter implements EmitterInterface, ListenerAcceptorInterface
      */
     public function emit(...$events)
     {
-        // TODO: Implement emit() method.
+        foreach($events as $event) {
+            $this->emitEvent($event);
+        }
     }
 
     /**

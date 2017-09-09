@@ -2,12 +2,16 @@
 
 namespace spec\Bounce\Bounce;
 
-use Bounce\Bounce\Listener\AcceptorInterface;
+use ArrayIterator;
+use Bounce\Bounce\Acceptor\AcceptorInterface;
+use Bounce\Bounce\Listener\CallableListener;
 use EventIO\InterOp\EmitterInterface;
 use EventIO\InterOp\EventInterface;
 use EventIO\InterOp\ListenerAcceptorInterface;
 use EventIO\InterOp\ListenerInterface;
 use PhpSpec\ObjectBehavior;
+use Prophecy\Argument;
+use Traversable;
 
 class EmitterSpec extends ObjectBehavior
 {
@@ -26,17 +30,42 @@ class EmitterSpec extends ObjectBehavior
         $this->shouldHaveType(ListenerAcceptorInterface::class);
     }
 
-    function it_dispatches_events(EventInterface $event, ListenerInterface $listener, $acceptor)
-    {
+    function it_dispatches_a_single_event(
+        EventInterface $event,
+        $acceptor
+    ) {
         $eventName = 'foo';
+        $listener = new CallableListener(function(){});
 
         $acceptor->addListener($eventName, $listener, ListenerAcceptorInterface::PRIORITY_NORMAL)
             ->shouldBeCalled();
-        $acceptor->listenersFor($event)->willReturn([$listener]);
-        $listener->handle($event)->shouldBeCalled();
+        $acceptor->listenersFor($event)->will(function($event) use($listener) {
+           yield $listener;
+        });
 
         $this->addListener($eventName, $listener);
 
         $this->emitEvent($event);
+    }
+
+    function it_queues_events(
+        EventInterface $firstEvent,
+        EventInterface $secondEvent,
+        EventInterface $thirdEvent,
+        $acceptor
+    ) {
+        $listeners = new ArrayIterator([]);
+
+        $acceptor->listenersFor($firstEvent)->willReturn($listeners)
+            ->shouldBeCalled();
+
+        $acceptor->listenersFor($secondEvent)->willReturn($listeners)
+            ->shouldBeCalled();
+
+        $acceptor->listenersFor($thirdEvent)->willReturn($listeners)
+            ->shouldBeCalled();
+
+
+        $this->emit($firstEvent, $secondEvent, $thirdEvent);
     }
 }
