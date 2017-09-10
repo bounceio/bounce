@@ -8,6 +8,7 @@
 namespace Bounce\Bounce\Acceptor;
 
 use Bounce\Bounce\MappedListener\Collection\MappedListenerCollectionInterface;
+use Bounce\Bounce\MappedListener\Collection\MappedListeners;
 use Bounce\Bounce\Middleware\Acceptor\AcceptorMiddlewareInterface;
 use EventIO\InterOp\EventInterface;
 use EventIO\InterOp\ListenerInterface;
@@ -25,13 +26,24 @@ class Acceptor implements AcceptorInterface
      */
     private $mappedListeners;
 
+    public static function create(
+        AcceptorMiddlewareInterface $middleware,
+        MappedListenerCollectionInterface $mappedListeners
+    ) {
+        if (!$mappedListeners) {
+            $mappedListeners = MappedListeners::create();
+        }
+
+        return new self($middleware, $mappedListeners);
+    }
+
     /**
      * Acceptor constructor.
      *
      * @param AcceptorMiddlewareInterface       $middleware
      * @param MappedListenerCollectionInterface $mappedListeners
      */
-    public function __construct(
+    private function __construct(
         AcceptorMiddlewareInterface $middleware,
         MappedListenerCollectionInterface $mappedListeners
     ) {

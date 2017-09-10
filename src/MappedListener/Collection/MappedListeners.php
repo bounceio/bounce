@@ -30,9 +30,9 @@ class MappedListeners implements MappedListenerCollectionInterface
 
     /**
      * MappedListeners constructor.
-     * @param array $mappedListeners
+     * @param iterable $mappedListeners
      */
-    private function __construct(array $mappedListeners = [])
+    private function __construct(iterable $mappedListeners = [])
     {
         $this->mappedListeners = new SplObjectStorage();
 

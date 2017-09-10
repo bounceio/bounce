@@ -19,7 +19,7 @@ class AcceptorSpec extends ObjectBehavior
         MappedListenerCollectionInterface $listenerCollection
 
     ) {
-        $this->beConstructedWith($middleware, $listenerCollection);
+        $this->beConstructedThroughCreate($middleware, $listenerCollection);
     }
 
     function it_is_a_listener_acceptor()

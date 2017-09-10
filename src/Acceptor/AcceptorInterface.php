@@ -19,7 +19,7 @@ interface AcceptorInterface extends ListenerAcceptorInterface
     /**
      * @param EventInterface $event
      *
-     * @return mixed
+     * @return iterable
      */
-    public function listenersFor(EventInterface $event): Traversable;
+    public function listenersFor(EventInterface $event): iterable;
 }
