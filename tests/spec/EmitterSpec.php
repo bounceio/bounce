@@ -47,9 +47,7 @@ class EmitterSpec extends ObjectBehavior
            yield $listener;
         });
 
-        $this->addListener($eventName, $listener);
-
-        $this->emitEvent($event);
+        $this->addListener($eventName, $listener)->emitEvent($event);
     }
 
     function it_queues_events(
