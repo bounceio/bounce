@@ -7,15 +7,26 @@ use Bounce\Bounce\EventQueue\EventQueue;
 use Bounce\Bounce\EventQueue\EventQueueInterface;
 use EventIO\InterOp\EventInterface;
 
-class Dispatcher implements DispatcherInterface
+/**
+ * Class Dispatcher
+ * @package Bounce\Bounce\Dispatcher
+ */
+final class Dispatcher implements DispatcherInterface
 {
     /**
      * @var EventQueueInterface
      */
     private $queue;
 
+    /**
+     * @var bool
+     */
     private $dispatching = false;
 
+    /**
+     * @param EventQueueInterface|null $queue
+     * @return Dispatcher
+     */
     public static function create(
         EventQueueInterface $queue = null
     ): self {
@@ -43,6 +54,7 @@ class Dispatcher implements DispatcherInterface
     public function enqueue(EventInterface ...$events): DispatcherInterface
     {
         $this->queue->queueEvents($events);
+
         return $this;
     }
 

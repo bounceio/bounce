@@ -8,16 +8,16 @@
     "packages": [
         {
             "name": "eventbus-interop/eventbus-interop",
-            "version": "0.1.2",
+            "version": "0.1.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-eventbus-interop/event-bus-interop.git",
-                "reference": "3f3fa0aa347868b8e26fe014e6818f5e25c27213"
+                "reference": "980a0630bba5be94fe27075ae0d9deb41195d89b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-eventbus-interop/event-bus-interop/zipball/3f3fa0aa347868b8e26fe014e6818f5e25c27213",
-                "reference": "3f3fa0aa347868b8e26fe014e6818f5e25c27213",
+                "url": "https://api.github.com/repos/php-eventbus-interop/event-bus-interop/zipball/980a0630bba5be94fe27075ae0d9deb41195d89b",
+                "reference": "980a0630bba5be94fe27075ae0d9deb41195d89b",
                 "shasum": ""
             },
             "require": {
@@ -43,7 +43,7 @@
                 }
             ],
             "description": "Interoperability interface definitions for event buses",
-            "time": "2017-07-13T18:39:44+00:00"
+            "time": "2017-09-10T21:48:29+00:00"
         },
         {
             "name": "pimple/pimple",
@@ -148,24 +148,25 @@
     "packages-dev": [
         {
             "name": "behat/behat",
-            "version": "v3.3.1",
+            "version": "v3.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Behat/Behat.git",
-                "reference": "44a58c1480d6144b2dc2c2bf02b9cef73c83840d"
+                "reference": "7de1a2207735fe7e2c06373dea3fd64c27c367fc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Behat/Behat/zipball/44a58c1480d6144b2dc2c2bf02b9cef73c83840d",
-                "reference": "44a58c1480d6144b2dc2c2bf02b9cef73c83840d",
+                "url": "https://api.github.com/repos/Behat/Behat/zipball/7de1a2207735fe7e2c06373dea3fd64c27c367fc",
+                "reference": "7de1a2207735fe7e2c06373dea3fd64c27c367fc",
                 "shasum": ""
             },
             "require": {
-                "behat/gherkin": "^4.4.4",
+                "behat/gherkin": "^4.5.1",
                 "behat/transliterator": "^1.2",
-                "container-interop/container-interop": "^1.1",
+                "container-interop/container-interop": "^1.2",
                 "ext-mbstring": "*",
                 "php": ">=5.3.3",
+                "psr/container": "^1.0",
                 "symfony/class-loader": "~2.1||~3.0",
                 "symfony/config": "~2.3||~3.0",
                 "symfony/console": "~2.5||~3.0",
@@ -226,7 +227,7 @@
                 "symfony",
                 "testing"
             ],
-            "time": "2017-05-15T16:49:16+00:00"
+            "time": "2017-09-10T11:21:07+00:00"
         },
         {
             "name": "behat/gherkin",

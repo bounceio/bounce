@@ -14,7 +14,7 @@ use EventIO\InterOp\EventInterface;
 use EventIO\InterOp\ListenerInterface;
 use Traversable;
 
-class Acceptor implements AcceptorInterface
+final class Acceptor implements AcceptorInterface
 {
     /**
      * @var AcceptorMiddlewareInterface
