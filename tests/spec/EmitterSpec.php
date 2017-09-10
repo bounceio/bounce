@@ -5,16 +5,20 @@ namespace spec\Bounce\Bounce;
 use ArrayIterator;
 use Bounce\Bounce\Acceptor\AcceptorInterface;
 use Bounce\Bounce\Listener\CallableListener;
+use Bounce\Bounce\Middleware\Emitter\EmitterMiddlewareInterface;
 use EventIO\InterOp\EmitterInterface;
 use EventIO\InterOp\EventInterface;
 use EventIO\InterOp\ListenerAcceptorInterface;
 use PhpSpec\ObjectBehavior;
+use Prophecy\Argument;
 
 class EmitterSpec extends ObjectBehavior
 {
-    function let(AcceptorInterface $acceptor)
-    {
-        $this->beConstructedWith($acceptor);
+    function let(
+        AcceptorInterface $acceptor,
+        EmitterMiddlewareInterface $middleware
+    ) {
+        $this->beConstructedWith($acceptor, $middleware);
     }
 
     function it_is_an_event_emitter()
@@ -29,14 +33,17 @@ class EmitterSpec extends ObjectBehavior
 
     function it_dispatches_a_single_event(
         EventInterface $event,
-        $acceptor
+        $acceptor,
+        $middleware
     ) {
         $eventName = 'foo';
         $listener = new CallableListener(function(){});
 
+        $middleware->queue($event)->willReturn($event);
+
         $acceptor->addListener($eventName, $listener, ListenerAcceptorInterface::PRIORITY_NORMAL)
             ->shouldBeCalled();
-        $acceptor->listenersFor($event)->will(function($event) use($listener) {
+        $acceptor->listenersFor($event)->will(function() use($listener) {
            yield $listener;
         });
 
@@ -49,9 +56,13 @@ class EmitterSpec extends ObjectBehavior
         EventInterface $firstEvent,
         EventInterface $secondEvent,
         EventInterface $thirdEvent,
-        $acceptor
+        $acceptor,
+        $middleware
     ) {
         $listeners = new ArrayIterator([]);
+
+        $middleware->queue(Argument::type(EventInterface::class))
+            ->willReturn($firstEvent, $secondEvent, $thirdEvent);
 
         $acceptor->listenersFor($firstEvent)->willReturn($listeners)
             ->shouldBeCalled();

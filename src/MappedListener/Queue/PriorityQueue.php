@@ -19,6 +19,10 @@ class PriorityQueue implements QueueInterface
      */
     private $mappedListeners;
 
+    /**
+     * PriorityQueue constructor.
+     * @param array $mappedListeners
+     */
     public function __construct($mappedListeners = [])
     {
         $this->mappedListeners = new SplObjectStorage();

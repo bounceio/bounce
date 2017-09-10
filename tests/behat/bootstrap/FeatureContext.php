@@ -2,14 +2,23 @@
 namespace Features\Bounce\Bounce;
 
 use Behat\Behat\Context\Context;
-use Behat\Gherkin\Node\PyStringNode;
 use Behat\Gherkin\Node\TableNode;
+use Bounce\Bounce\ServiceProvider\Bounce;
+use Pimple\Container;
+use Pimple\Psr11\Container as PsrContainer;
 
 /**
  * Defines application features from the specific context.
  */
 class FeatureContext implements Context
 {
+    /**
+     * @var PsrContainer
+     */
+    private $container;
+
+    private $events;
+
     /**
      * Initializes context.
      *
@@ -19,6 +28,9 @@ class FeatureContext implements Context
      */
     public function __construct()
     {
+        $container = new Container();
+        $container->register(new Bounce());
+        $this->container = new PsrContainer($container);
     }
 
     /**
@@ -26,7 +38,9 @@ class FeatureContext implements Context
      */
     public function thatIHaveTheFollowingEventsIWantToEmit(TableNode $table)
     {
-        throw new PendingException();
+        foreach ($table as $row) {
+            $this->events[] = $row['Name'];
+        }
     }
 
     /**
@@ -34,7 +48,7 @@ class FeatureContext implements Context
      */
     public function iEmitTheEvents()
     {
-        throw new PendingException();
+        $this->container->get(Bounce::EMITTER)->emitBatch($this->events);
     }
 
     /**

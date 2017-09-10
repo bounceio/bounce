@@ -49,9 +49,7 @@ class MappedListenersSpec extends ObjectBehavior
         $firstMappedListener->listener()->willReturn($firstListener);
         $secondMappedListener->listener()->willReturn($secondListener);
 
-        $this->beConstructedThroughCreate();
-        $this->add($secondMappedListener);
-        $this->add($firstMappedListener);
+        $this->beConstructedThroughCreate($secondMappedListener, $firstMappedListener);
         $this->listenersFor($event)->shouldIterateAs([$firstListener, $secondListener]);
     }
 }

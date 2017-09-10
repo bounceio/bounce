@@ -8,6 +8,7 @@
 namespace Bounce\Bounce;
 
 use Bounce\Bounce\Acceptor\AcceptorInterface;
+use Bounce\Bounce\Middleware\Emitter\EmitterMiddlewareInterface;
 use EventIO\InterOp\EmitterInterface;
 use EventIO\InterOp\EventInterface;
 use EventIO\InterOp\ListenerAcceptorInterface;
@@ -23,14 +24,21 @@ class Emitter implements EmitterInterface, ListenerAcceptorInterface
      */
     private $acceptor;
 
+
+    private $middleware;
+
     /**
      * Emitter constructor.
      *
      * @param AcceptorInterface $acceptor
+     * @param EmitterMiddlewareInterface $middleware
      */
-    public function __construct(AcceptorInterface $acceptor)
-    {
-        $this->acceptor = $acceptor;
+    public function __construct(
+        AcceptorInterface $acceptor,
+        EmitterMiddlewareInterface $middleware
+    ) {
+        $this->acceptor     = $acceptor;
+        $this->middleware   = $middleware;
     }
 
     /**
@@ -40,8 +48,16 @@ class Emitter implements EmitterInterface, ListenerAcceptorInterface
      */
     public function emit(...$events)
     {
+        $this->emitBatch($events);
+    }
+
+    /**
+     * @param $events
+     */
+    public function emitBatch(iterable $events)
+    {
         foreach ($events as $event) {
-            $this->emitEvent($event);
+            $this->queueEvent($event);
         }
     }
 
@@ -52,9 +68,7 @@ class Emitter implements EmitterInterface, ListenerAcceptorInterface
      */
     public function emitEvent(EventInterface $event)
     {
-        foreach ($this->acceptor->listenersFor($event) as $listener) {
-            $listener->handle($event);
-        }
+        $this->queueEvent($event);
     }
 
     /**
@@ -64,7 +78,7 @@ class Emitter implements EmitterInterface, ListenerAcceptorInterface
      */
     public function emitName($event)
     {
-        // TODO: Implement emitName() method.
+        return $this->queueEvent($event);
     }
 
     /**
@@ -80,5 +94,13 @@ class Emitter implements EmitterInterface, ListenerAcceptorInterface
         $priority = self::PRIORITY_NORMAL
     ) {
         $this->acceptor->addListener($eventName, $listener, $priority);
+    }
+
+    private function queueEvent($event)
+    {
+        $event = $this->middleware->queue($event);
+        foreach ($this->acceptor->listenersFor($event) as $listener) {
+            $listener->handle($event);
+        }
     }
 }

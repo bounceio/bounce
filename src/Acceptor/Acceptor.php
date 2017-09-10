@@ -35,8 +35,8 @@ class Acceptor implements AcceptorInterface
         AcceptorMiddlewareInterface $middleware,
         MappedListenerCollectionInterface $mappedListeners
     ) {
-        $this->middleware = $middleware;
-        $this->mappedListeners = $mappedListeners;
+        $this->middleware       = $middleware;
+        $this->mappedListeners  = $mappedListeners;
     }
 
     /**
