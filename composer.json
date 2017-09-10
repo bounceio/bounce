@@ -10,6 +10,16 @@
       "email": "barney@shrikeh.net"
     }
   ],
+  "autoload": {
+    "psr-4": {
+      "Bounce\\Bounce\\": "src"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Features\\Bounce\\Bounce\\": "tests/behat/bootstrap"
+    }
+  },
   "require": {
     "php": ">= 7.1",
     "eventbus-interop/eventbus-interop": "^0.1"
@@ -17,7 +27,8 @@
   "require-dev": {
     "behat/behat": "^3.3",
     "phpspec/phpspec": "^4.0",
-    "escapestudios/symfony2-coding-standard": "^3.0"
+    "escapestudios/symfony2-coding-standard": "^3.0",
+    "friendsofphp/php-cs-fixer": "^2.5"
   },
   "prefer-stable": true,
   "config": {
