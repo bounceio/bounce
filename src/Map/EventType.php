@@ -5,7 +5,7 @@
  * @license      https://opensource.org/licenses/MIT
  */
 
-namespace Shrikeh\Bounce\Event\Map;
+namespace Bounce\Bounce\Map;
 
 use EventIO\InterOp\EventInterface;
 
@@ -15,22 +15,17 @@ use EventIO\InterOp\EventInterface;
 final class EventType implements MapInterface
 {
     /**
-     * @var string
+     * @var array
      */
-    private $eventType;
+    private $eventTypes;
 
     /**
      * EventType constructor.
-     *
-     * @param string $eventType A class type to look for
+     * @param string[] ...$eventTypes
      */
-    public function __construct(string $eventType)
+    public function __construct(string ...$eventTypes)
     {
-        if (!(interface_exists($eventType) || class_exists($eventType))) {
-            $msg = 'No such interface or class as %s exists';
-            throw new \RuntimeException(sprintf($msg, $eventType));
-        }
-        $this->eventType = $eventType;
+        $this->eventTypes = $eventTypes;
     }
 
     /**
@@ -38,7 +33,7 @@ final class EventType implements MapInterface
      */
     public function __toString()
     {
-        return $this->eventType;
+        return explode(',', $this->eventTypes);
     }
 
     /**
@@ -46,15 +41,19 @@ final class EventType implements MapInterface
      */
     public function isMatch(EventInterface $event): bool
     {
-        // see https://veewee.github.io/blog/optimizing-php-performance-by-fq-function-calls/
-        return \is_a($event, $this->eventType);
-    }
+        $match = false;
+        foreach ($this->eventTypes as $eventType) {
+            if (!(interface_exists($eventType) || class_exists($eventType))) {
+                $msg = 'No such interface or class as %s exists';
+                throw new \RuntimeException(sprintf($msg, $eventType));
+            }
+            // see https://veewee.github.io/blog/optimizing-php-performance-by-fq-function-calls/
+            if (\is_a($event, $eventType)) {
+                $match = true;
+                break;
+            }
+        }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function index(): string
-    {
-        return (string) (self::class.'|'.$this);
+        return $match;
     }
 }

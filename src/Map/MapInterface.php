@@ -5,7 +5,7 @@
  * @license      https://opensource.org/licenses/MIT
  */
 
-namespace Shrikeh\Bounce\Event\Map;
+namespace Bounce\Bounce\Map;
 
 use EventIO\InterOp\EventInterface;
 
@@ -14,10 +14,9 @@ use EventIO\InterOp\EventInterface;
  */
 interface MapInterface
 {
-    public function isMatch(EventInterface $event): bool;
-
     /**
-     * @return string
+     * @param EventInterface $event
+     * @return bool
      */
-    public function index(): string;
+    public function isMatch(EventInterface $event): bool;
 }
