@@ -6,7 +6,9 @@ use Bounce\Bounce\Acceptor\Acceptor;
 use Bounce\Bounce\Emitter;
 use Bounce\Bounce\MappedListener\Collection\MappedListeners;
 use Bounce\Bounce\Middleware\Acceptor\AcceptorMiddleware;
+use Bounce\Bounce\Middleware\Emitter\ContainerMiddleware;
 use Pimple\Container;
+use Pimple\Psr11\ServiceLocator;
 use Pimple\ServiceProviderInterface;
 
 /**
@@ -46,7 +48,8 @@ class Bounce implements ServiceProviderInterface
         };
 
         $pimple[self::EMITTER_MIDDLEWARE] = function(Container $con) {
-
+            $serviceLocator = new ServiceLocator($con, []);
+            return new ContainerMiddleware($serviceLocator);
         };
 
         $pimple[self::EMITTER] = function(Container $con) {

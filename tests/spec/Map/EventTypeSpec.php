@@ -10,7 +10,7 @@ class EventTypeSpec extends ObjectBehavior
 {
     function it_returns_true_if_the_event_is_of_the_correct_type()
     {
-        $event = Named::create('mock');
+        $event = Named::create('test');
         $this->beConstructedWith(Named::class);
         $this->isMatch($event)->shouldReturn(true);
     }

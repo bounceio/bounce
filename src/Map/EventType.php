@@ -43,10 +43,10 @@ final class EventType implements MapInterface
     {
         $match = false;
         foreach ($this->eventTypes as $eventType) {
-            if (!(interface_exists($eventType) || class_exists($eventType))) {
-                $msg = 'No such interface or class as %s exists';
-                throw new \RuntimeException(sprintf($msg, $eventType));
-            }
+//            if (!(interface_exists($eventType) || class_exists($eventType))) {
+//                $msg = 'No such interface or class as %s exists';
+//                throw new \RuntimeException(sprintf($msg, $eventType));
+//            }
             // see https://veewee.github.io/blog/optimizing-php-performance-by-fq-function-calls/
             if (\is_a($event, $eventType)) {
                 $match = true;
