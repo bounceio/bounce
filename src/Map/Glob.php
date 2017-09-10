@@ -5,7 +5,7 @@
  * @license      https://opensource.org/licenses/MIT
  */
 
-namespace Shrikeh\Bounce\Event\Map;
+namespace Bounce\Bounce\Map;
 
 use EventIO\InterOp\EventInterface;
 
@@ -46,13 +46,5 @@ final class Glob implements MapInterface
     {
         // see https://veewee.github.io/blog/optimizing-php-performance-by-fq-function-calls/
         return \fnmatch($this->pattern, $event->name());
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function index(): string
-    {
-        return (string) (self::class.'|'.$this);
     }
 }
