@@ -2,7 +2,6 @@
 
 namespace spec\Bounce\Bounce\Middleware\Acceptor\Plugin;
 
-use Bounce\Bounce\Acceptor\Acceptor;
 use Bounce\Bounce\Cartographer\Cartographer;
 use Bounce\Bounce\Cartographer\CartographerInterface;
 use Bounce\Bounce\Map\MapInterface;
@@ -11,7 +10,7 @@ use EventIO\InterOp\ListenerInterface;
 use PhpSpec\ObjectBehavior;
 use StdClass;
 
-class ListenerMapSpec extends ObjectBehavior
+class CartographySpec extends ObjectBehavior
 {
     function let(CartographerInterface $cartographer)
     {

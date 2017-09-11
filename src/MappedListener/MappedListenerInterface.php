@@ -8,16 +8,13 @@
 namespace Bounce\Bounce\MappedListener;
 
 use Bounce\Bounce\Map\MapInterface;
+use EventIO\InterOp\ListenerInterface;
 
 /**
  * Interface MappedListenerInterface.
  */
 interface MappedListenerInterface
 {
-    const HIGHER_PRIORITY = -1;
-    const SAME_PRIORITY = 0;
-    const LOWER_PRIORITY = 1;
-
     /**
      * @return MapInterface
      */
@@ -31,16 +28,9 @@ interface MappedListenerInterface
     public function matches($event): bool;
 
     /**
-     * @return mixed
+     * @return callable|ListenerInterface
      */
     public function listener();
-
-    /**
-     * @param MappedListenerInterface $mappedListener
-     *
-     * @return int
-     */
-    public function compare(MappedListenerInterface $mappedListener): int;
 
     /**
      * @return mixed

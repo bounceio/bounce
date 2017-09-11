@@ -7,7 +7,7 @@ use Bounce\Bounce\MappedListener\MappedListenerInterface;
 use Bounce\Bounce\Middleware\Acceptor\AcceptorMiddlewareInterface;
 use Bounce\Bounce\Middleware\Acceptor\ContainerMiddleware;
 use Bounce\Bounce\Middleware\Acceptor\Plugin\AcceptorPluginInterface;
-use Bounce\Bounce\Middleware\Acceptor\Plugin\ListenerMap;
+use Bounce\Bounce\Middleware\Acceptor\Plugin\Cartography;
 use EventIO\InterOp\ListenerInterface;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;

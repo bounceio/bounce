@@ -11,7 +11,7 @@ use Bounce\Bounce\Map\MapInterface;
 
 /**
  * Interface CartographerInterface
- * @package Bounce\Bounce\Cartographer
+ * @package Bounce\Bounce\Cartography
  */
 interface CartographerInterface
 {

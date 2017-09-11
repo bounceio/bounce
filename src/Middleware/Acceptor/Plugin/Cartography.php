@@ -11,7 +11,7 @@ use Bounce\Bounce\Cartographer\Cartographer;
 use Bounce\Bounce\Cartographer\CartographerInterface;
 use stdClass;
 
-class ListenerMap implements AcceptorPluginInterface
+class Cartography implements AcceptorPluginInterface
 {
     /**
      * @var CartographerInterface
@@ -21,7 +21,7 @@ class ListenerMap implements AcceptorPluginInterface
     /**
      * @param CartographerInterface|null $cartographer
      *
-     * @return ListenerMap
+     * @return Cartography
      */
     public static function create(CartographerInterface $cartographer = null)
     {
