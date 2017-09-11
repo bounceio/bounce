@@ -27,13 +27,14 @@
   },
   "require-dev": {
     "behat/behat": "^3.3",
-    "phpspec/phpspec": "^4.0",
     "escapestudios/symfony2-coding-standard": "^3.0",
-    "friendsofphp/php-cs-fixer": "^2.5"
+    "friendsofphp/php-cs-fixer": "^2.5",
+    "phpspec/phpspec": "^4.0"
   },
   "prefer-stable": true,
   "config": {
-    "bin-dir": "bin"
+    "bin-dir": "bin",
+    "sort-packages": true
   },
   "archive": {
     "exclude": ["*", "!/src"]
