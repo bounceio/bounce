@@ -1,4 +1,9 @@
 <?php
+/**
+ * @author       Barney Hanlon <barney@shrikeh.net>
+ * @copyright    Barney Hanlon 2017
+ * @license      https://opensource.org/licenses/MIT
+ */
 
 namespace Bounce\Bounce\ServiceProvider;
 
@@ -32,27 +37,27 @@ class Bounce implements ServiceProviderInterface
      */
     public function register(Container $pimple)
     {
-        $pimple[self::MAPPED_LISTENER_COLLECTION] = function() {
+        $pimple[self::MAPPED_LISTENER_COLLECTION] = function () {
             return MappedListeners::create();
         };
 
-        $pimple[self::ACCEPTOR_MIDDLEWARE] = function() {
+        $pimple[self::ACCEPTOR_MIDDLEWARE] = function () {
             return new AcceptorMiddleware();
         };
 
-        $pimple[self::ACCEPTOR] = function(Container $con) {
+        $pimple[self::ACCEPTOR] = function (Container $con) {
             return new Acceptor(
                 $con[self::ACCEPTOR_MIDDLEWARE],
                 $con[self::MAPPED_LISTENER_COLLECTION]
             );
         };
 
-        $pimple[self::EMITTER_MIDDLEWARE] = function(Container $con) {
+        $pimple[self::EMITTER_MIDDLEWARE] = function (Container $con) {
             $serviceLocator = new ServiceLocator($con, []);
             return new ContainerMiddleware($serviceLocator);
         };
 
-        $pimple[self::EMITTER] = function(Container $con) {
+        $pimple[self::EMITTER] = function (Container $con) {
             return new Emitter(
                 $con[self::ACCEPTOR],
                 $con[self::EMITTER_MIDDLEWARE]

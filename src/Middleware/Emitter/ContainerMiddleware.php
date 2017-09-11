@@ -1,4 +1,9 @@
 <?php
+/**
+ * @author       Barney Hanlon <barney@shrikeh.net>
+ * @copyright    Barney Hanlon 2017
+ * @license      https://opensource.org/licenses/MIT
+ */
 
 namespace Bounce\Bounce\Middleware\Emitter;
 
@@ -43,13 +48,13 @@ class ContainerMiddleware implements EmitterMiddlewareInterface
     private function executionChain(): callable
     {
         if (!$this->executionChain) {
-            $lastCallable = function(EventInterface $event) {
+            $lastCallable = function (EventInterface $event) {
                 return $event;
             };
 
             $plugins = $this->container->get(self::QUEUE_PLUGINS);
 
-            while($plugin = array_pop($plugins)) {
+            while ($plugin = array_pop($plugins)) {
                 $lastCallable = function ($event) use ($plugin, $lastCallable) {
                     return $plugin($event, $lastCallable);
                 };

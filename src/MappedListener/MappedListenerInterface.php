@@ -7,7 +7,7 @@
 
 namespace Bounce\Bounce\MappedListener;
 
-use Shrikeh\Bounce\Event\Map\MapInterface;
+use Bounce\Bounce\Map\MapInterface;
 
 /**
  * Interface MappedListenerInterface.
