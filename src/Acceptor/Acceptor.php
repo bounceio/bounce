@@ -54,11 +54,11 @@ final class Acceptor implements AcceptorInterface
     /**
      * @param EventInterface $event
      *
-     * @return Traversable
+     * @return iterable
      */
-    public function listenersFor(EventInterface $event): Traversable
+    public function listenersFor(EventInterface $event): iterable
     {
-        yield from $this->middleware->listenersFor($event, $this->mappedListeners);
+        yield from $this->mappedListeners->listenersFor($event);
     }
 
     /**

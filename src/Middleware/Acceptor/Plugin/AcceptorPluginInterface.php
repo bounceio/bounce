@@ -6,6 +6,8 @@
  */
 namespace Bounce\Bounce\Middleware\Acceptor\Plugin;
 
+use stdClass;
+
 
 /**
  * Interface AcceptorPluginInterface
@@ -14,10 +16,10 @@ namespace Bounce\Bounce\Middleware\Acceptor\Plugin;
 interface AcceptorPluginInterface
 {
     /**
-     * @param object $parts
-     * @param callable $next
+     * @param object|stdClass $parts
+     * @param callable        $next
      *
      * @return mixed
      */
-    public function __invoke(object $parts, callable $next);
+    public function __invoke(stdClass $parts, callable $next);
 }

@@ -24,12 +24,4 @@ interface AcceptorMiddlewareInterface
      * @return MappedListenerInterface
      */
     public function listenerAdd($map, $listener, $priority): MappedListenerInterface;
-
-    /**
-     * @param EventInterface $event
-     * @param $listeners
-     *
-     * @return Traversable
-     */
-    public function listenersFor(EventInterface $event, $listeners): Traversable;
 }

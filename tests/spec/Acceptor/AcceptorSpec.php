@@ -48,7 +48,7 @@ class AcceptorSpec extends ObjectBehavior
 
         $listenerCollection->add($mappedListener)->shouldBeCalled();
 
-        $middleware->listenersFor($event, $listenerCollection)->willReturn($queue);
+        $listenerCollection->listenersFor($event)->willReturn($queue);
 
         $this->addListener(
             $eventName,

@@ -4,15 +4,17 @@
  * @copyright    Barney Hanlon 2017
  * @license      https://opensource.org/licenses/MIT
  */
+namespace Bounce\Bounce\Middleware\Acceptor;
 
-namespace Bounce\Bounce\Middleware\Emitter;
-
+use Bounce\Bounce\MappedListener\MappedListenerInterface;
 use EventIO\InterOp\EventInterface;
 use Psr\Container\ContainerInterface;
+use stdClass;
+use Traversable;
 
-class ContainerMiddleware implements EmitterMiddlewareInterface
+class ContainerMiddleware implements AcceptorMiddlewareInterface
 {
-    const QUEUE_PLUGINS = 'bounce.middleware.emitter.plugins.event';
+    const LISTENER_PLUGINS = 'bounce.middleware.acceptor.plugins.add_listener';
 
     /**
      * @var ContainerInterface
@@ -33,16 +35,14 @@ class ContainerMiddleware implements EmitterMiddlewareInterface
         $this->container = $container;
     }
 
-
     /**
-     * @param $event
-     * @return EventInterface
+     * {@inheritdoc}
      */
-    public function queue($event): EventInterface
+    public function listenerAdd($map, $listener, $priority): MappedListenerInterface
     {
         $stack = $this->executionChain();
 
-        return $stack($event);
+        return $stack($this->dtoFrom($map, $listener, $priority));
     }
 
     /**
@@ -55,11 +55,11 @@ class ContainerMiddleware implements EmitterMiddlewareInterface
                 return $event;
             };
 
-            $plugins = $this->container->get(self::QUEUE_PLUGINS);
+            $plugins = $this->container->get(self::LISTENER_PLUGINS);
 
             while ($plugin = array_pop($plugins)) {
-                $lastCallable = function ($event) use ($plugin, $lastCallable) {
-                    return $plugin($event, $lastCallable);
+                $lastCallable = function ($dto) use ($plugin, $lastCallable) {
+                    return $plugin($dto, $lastCallable);
                 };
             }
 
@@ -67,5 +67,15 @@ class ContainerMiddleware implements EmitterMiddlewareInterface
         }
 
         return $this->executionChain;
+    }
+
+    private function dtoFrom($map, $listener, $priority)
+    {
+        $listenerToMap              = new stdClass();
+        $listenerToMap->map         = $map;
+        $listenerToMap->listener    = $listener;
+        $listenerToMap->priority    = $priority;
+
+        return $listenerToMap;
     }
 }

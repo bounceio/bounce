@@ -9,6 +9,7 @@ namespace Bounce\Bounce\Middleware\Acceptor\Plugin;
 
 use Bounce\Bounce\Cartographer\Cartographer;
 use Bounce\Bounce\Cartographer\CartographerInterface;
+use stdClass;
 
 class ListenerMap implements AcceptorPluginInterface
 {
@@ -39,7 +40,7 @@ class ListenerMap implements AcceptorPluginInterface
     /**
      * {@inheritdoc}
      */
-    public function __invoke(object $parts, callable $next)
+    public function __invoke(stdClass $parts, callable $next)
     {
         $parts->map = $this->cartographer->map(
             Cartographer::MAP_GLOB,
