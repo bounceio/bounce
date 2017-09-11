@@ -9,6 +9,7 @@ use Bounce\Bounce\Map\MapInterface;
 use Bounce\Bounce\Middleware\Acceptor\Plugin\AcceptorPluginInterface;
 use EventIO\InterOp\ListenerInterface;
 use PhpSpec\ObjectBehavior;
+use StdClass;
 
 class ListenerMapSpec extends ObjectBehavior
 {
@@ -29,15 +30,17 @@ class ListenerMapSpec extends ObjectBehavior
     ) {
         $mapString = 'foo.bar.*';
 
+        $parts = new StdClass();
+
         $next = function($parts) {
-            return $parts[0];
+            return $parts->map;
         };
 
         $cartographer->map(Cartographer::MAP_GLOB, $mapString)
             ->willReturn($map);
 
-        $priority = Acceptor::PRIORITY_NORMAL;
+        $parts->map = $mapString;
 
-        $this->__invoke([$mapString, $listener, $priority], $next)->shouldReturn($map);
+        $this->__invoke($parts, $next)->shouldReturn($map);
     }
 }

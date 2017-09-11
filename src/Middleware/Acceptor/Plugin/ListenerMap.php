@@ -17,6 +17,11 @@ class ListenerMap implements AcceptorPluginInterface
      */
     private $cartographer;
 
+    /**
+     * @param CartographerInterface|null $cartographer
+     *
+     * @return ListenerMap
+     */
     public static function create(CartographerInterface $cartographer = null)
     {
         if (null == $cartographer) {
@@ -34,13 +39,12 @@ class ListenerMap implements AcceptorPluginInterface
     /**
      * {@inheritdoc}
      */
-    public function __invoke(iterable $parts, callable $next)
+    public function __invoke(object $parts, callable $next)
     {
-        list($mapString, $listener, $priority) = $parts;
-        $mapString = $this->cartographer->map(
+        $parts->map = $this->cartographer->map(
             Cartographer::MAP_GLOB,
-            $mapString
+            $parts->map
         );
-        return $next([$mapString, $listener, $priority]);
+        return $next($parts);
     }
 }

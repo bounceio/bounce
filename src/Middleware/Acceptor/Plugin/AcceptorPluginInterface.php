@@ -6,18 +6,18 @@
  */
 namespace Bounce\Bounce\Middleware\Acceptor\Plugin;
 
+
 /**
  * Interface AcceptorPluginInterface
  * @package Bounce\Bounce\Middleware\Acceptor\Plugin
  */
 interface AcceptorPluginInterface
 {
-
     /**
-     * @param iterable $parts
+     * @param object $parts
      * @param callable $next
      *
      * @return mixed
      */
-    public function __invoke(iterable $parts, callable $next);
+    public function __invoke(object $parts, callable $next);
 }
