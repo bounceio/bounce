@@ -14,7 +14,7 @@ class GlobSpec extends ObjectBehavior
     ) {
         $eventName = 'foo.bar';
         $event->name()->willReturn($eventName);
-        $this->beConstructedWith($eventName);
+        $this->beConstructedThroughCreate($eventName);
         $this->isMatch($event)->shouldReturn(true);
     }
 
@@ -23,7 +23,7 @@ class GlobSpec extends ObjectBehavior
     ) {
         $eventName = 'foo.bar';
         $event->name()->willReturn($eventName);
-        $this->beConstructedWith('foo.*');
+        $this->beConstructedThroughCreate('foo.*');
         $this->isMatch($event)->shouldReturn(true);
     }
 
@@ -32,15 +32,26 @@ class GlobSpec extends ObjectBehavior
     ) {
         $eventName = 'foo.bar';
         $event->name()->willReturn($eventName);
-        $this->beConstructedWith('bar.*');
+        $this->beConstructedThroughCreate('bar.*');
         $this->isMatch($event)->shouldReturn(false);
+    }
+
+    function it_can_check_multiple_patterns(
+        EventInterface $event
+    ) {
+        $event->name()->willReturn('baz.bop');
+
+        $this->beConstructedThroughFromIterable(['foo.baz', 'foo.bam', 'baz.*']);
+        $this->isMatch($event)->shouldReturn(true);
+        $event->name()->willReturn('foo.bam');
+        $this->isMatch($event)->shouldReturn(true);
     }
 
     function it_accepts_a_wildcard_that_will_match_any_event(
         EventInterface $event
     ) {
         $event->name()->willReturn('dhfsiusjhgdfkjsdfkhsgdbvhblrwhjbdhfbwehsnbdf');
-        $this->beConstructedWith('*');
+        $this->beConstructedThroughCreate('*');
         $this->isMatch($event)->shouldReturn(true);
     }
 }

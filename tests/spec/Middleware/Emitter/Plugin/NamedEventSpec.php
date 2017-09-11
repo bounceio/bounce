@@ -18,7 +18,6 @@ class NamedEventSpec extends ObjectBehavior
         ];
     }
 
-
     function it_is_an_emitter_plugin()
     {
         $this->shouldHaveType(EmitterPluginInterface::class);
