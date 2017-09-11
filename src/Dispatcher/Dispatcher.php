@@ -10,6 +10,7 @@ namespace Bounce\Bounce\Dispatcher;
 use Bounce\Bounce\Acceptor\AcceptorInterface;
 use Bounce\Bounce\EventQueue\EventQueue;
 use Bounce\Bounce\EventQueue\EventQueueInterface;
+use Bounce\Bounce\Middleware\Dispatcher\DispatcherMiddlewareInterface;
 use EventIO\InterOp\EventInterface;
 
 /**
@@ -24,31 +25,44 @@ final class Dispatcher implements DispatcherInterface
     private $queue;
 
     /**
+     * @var DispatcherMiddlewareInterface
+     */
+    private $middleware;
+
+    /**
      * @var bool
      */
     private $dispatching = false;
 
     /**
-     * @param EventQueueInterface|null $queue
+     * @param DispatcherMiddlewareInterface $dispatcherMiddleware
+     * @param EventQueueInterface|null      $queue
+     *
      * @return Dispatcher
      */
     public static function create(
+        DispatcherMiddlewareInterface $dispatcherMiddleware,
         EventQueueInterface $queue = null
     ): self {
         if (!$queue) {
             $queue = EventQueue::create();
         }
 
-        return new self($queue);
+        return new self($queue, $dispatcherMiddleware);
     }
 
     /**
      * Dispatcher constructor.
-     * @param EventQueueInterface $queue
+     *
+     * @param EventQueueInterface           $queue
+     * @param DispatcherMiddlewareInterface $dispatcherMiddleware
      */
-    private function __construct(EventQueueInterface $queue)
-    {
-        $this->queue = $queue;
+    private function __construct(
+        EventQueueInterface $queue,
+        DispatcherMiddlewareInterface $dispatcherMiddleware
+    ) {
+        $this->queue        = $queue;
+        $this->middleware   = $dispatcherMiddleware;
     }
 
     /**
@@ -96,6 +110,9 @@ final class Dispatcher implements DispatcherInterface
     ) {
         if (!$event->isPropagationStopped()) {
             foreach ($acceptor->listenersFor($event) as $listener) {
+
+                $this->middleware->dispatch($event, $listener);
+
                 if ($event->isPropagationStopped()) {
                     return;
                 }

@@ -10,15 +10,16 @@ use Bounce\Bounce\Event\Named;
 use Bounce\Bounce\EventQueue\EventQueueInterface;
 use Bounce\Bounce\Listener\CallableListener;
 use Bounce\Bounce\Map\Glob;
+use Bounce\Bounce\Middleware\Dispatcher\DispatcherMiddlewareInterface;
 use EventIO\InterOp\EventInterface;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
 class DispatcherSpec extends ObjectBehavior
 {
-    function let()
+    function let(DispatcherMiddlewareInterface $middleware)
     {
-        $this->beConstructedThroughCreate();
+        $this->beConstructedThroughCreate($middleware);
     }
 
     function it_is_a_dispatcher()

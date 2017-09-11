@@ -16,5 +16,11 @@ use Traversable;
  */
 interface DispatcherMiddlewareInterface
 {
-
+    /**
+     * @param EventInterface $event
+     * @param                $listener
+     *
+     * @return mixed
+     */
+    public function dispatch(EventInterface $event, $listener);
 }

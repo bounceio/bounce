@@ -4,7 +4,6 @@ namespace spec\Bounce\Bounce\Middleware\Acceptor\Plugin;
 
 use Bounce\Bounce\Acceptor\Acceptor;
 use Bounce\Bounce\Map\Glob;
-use Bounce\Bounce\Map\MapInterface;
 use Bounce\Bounce\MappedListener\MappedListenerInterface;
 use Bounce\Bounce\Middleware\Acceptor\Plugin\AcceptorPluginInterface;
 use PhpSpec\ObjectBehavior;
