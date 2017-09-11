@@ -40,7 +40,7 @@ class Cartography implements AcceptorPluginInterface
     /**
      * {@inheritdoc}
      */
-    public function __invoke(stdClass $parts, callable $next)
+    public function __invoke($parts, callable $next)
     {
         $parts->map = $this->cartographer->map(
             Cartographer::MAP_GLOB,

@@ -21,5 +21,5 @@ interface AcceptorPluginInterface
      *
      * @return mixed
      */
-    public function __invoke(stdClass $parts, callable $next);
+    public function __invoke($parts, callable $next);
 }

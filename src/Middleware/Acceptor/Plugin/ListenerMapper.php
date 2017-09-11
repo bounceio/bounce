@@ -8,11 +8,11 @@
 namespace Bounce\Bounce\Middleware\Acceptor\Plugin;
 
 use Bounce\Bounce\MappedListener\MappedListener;
+use Bounce\Bounce\MappedListener\MappedListenerInterface;
 use stdClass;
 
 /**
  * Class ListenerMapper
- * @package Bounce\Bounce\Middleware\Acceptor\Plugin
  */
 class ListenerMapper implements AcceptorPluginInterface
 {
@@ -24,6 +24,11 @@ class ListenerMapper implements AcceptorPluginInterface
      */
     public function __invoke($parts, callable $next)
     {
-        return $next(MappedListener::fromDto($parts));
+        $parts = $next($parts);
+        if (!$parts instanceof MappedListenerInterface) {
+            $parts = MappedListener::fromDto($parts);
+        }
+
+        return $parts;
     }
 }
