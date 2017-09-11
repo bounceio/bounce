@@ -5,6 +5,7 @@ namespace spec\Bounce\Bounce\Middleware\Emitter;
 use Bounce\Bounce\Event\Named;
 use Bounce\Bounce\Middleware\Emitter\ContainerMiddleware;
 use Bounce\Bounce\Middleware\Emitter\EmitterMiddlewareInterface;
+use Bounce\Bounce\Middleware\Emitter\Plugin\EmitterPluginInterface;
 use Bounce\Bounce\Middleware\Emitter\Plugin\NamedEvent;
 use EventIO\InterOp\EventInterface;
 use PhpSpec\ObjectBehavior;
@@ -34,7 +35,7 @@ class ContainerMiddlewareSpec extends ObjectBehavior
 
     function it_executes_middleware_plugins_for_an_event(
         ContainerInterface $locator,
-        NamedEvent $namedEvent,
+        EmitterPluginInterface $namedEvent,
         EventInterface $named
     ) {
         $eventName = 'foo.bar';

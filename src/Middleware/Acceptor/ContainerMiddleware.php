@@ -69,6 +69,13 @@ class ContainerMiddleware implements AcceptorMiddlewareInterface
         return $this->executionChain;
     }
 
+    /**
+     * @param $map
+     * @param $listener
+     * @param $priority
+     *
+     * @return stdClass
+     */
     private function dtoFrom($map, $listener, $priority)
     {
         $listenerToMap              = new stdClass();
