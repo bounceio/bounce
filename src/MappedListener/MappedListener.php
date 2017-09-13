@@ -46,6 +46,14 @@ class MappedListener implements MappedListenerInterface
         );
     }
 
+    public static function create(
+        MapInterface $map,
+        $listener,
+        $priority
+    ): self {
+        return new self($map, $listener, $priority);
+    }
+
     /**
      * MappedListener constructor.
      *
@@ -70,11 +78,17 @@ class MappedListener implements MappedListenerInterface
     }
 
     /**
-     * @return MapInterface
+     * @param $listener
+     *
+     * @return MappedListenerInterface
      */
-    public function map(): MapInterface
+    public function withListener($listener): MappedListenerInterface
     {
-        return $this->map;
+        return new self(
+            $this->map,
+            $listener,
+            $this->priority
+        );
     }
 
     /**
@@ -84,7 +98,7 @@ class MappedListener implements MappedListenerInterface
      */
     public function matches($event): bool
     {
-        return $this->map()->isMatch($event);
+        return $this->map->isMatch($event);
     }
 
     /**

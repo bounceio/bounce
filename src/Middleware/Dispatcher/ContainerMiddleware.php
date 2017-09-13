@@ -5,12 +5,12 @@
  * @license      https://opensource.org/licenses/MIT
  */
 
-namespace Bounce\Bounce\Middleware\Emitter;
+namespace Bounce\Bounce\Middleware\Dispatcher;
 
-use EventIO\InterOp\EventInterface;
+use Bounce\Bounce\Acceptor\AcceptorInterface;
 use Psr\Container\ContainerInterface;
 
-class ContainerMiddleware implements EmitterMiddlewareInterface
+class ContainerMiddleware implements DispatcherMiddlewareInterface
 {
     const QUEUE_PLUGINS = 'bounce.middleware.emitter.plugins.event';
 
@@ -33,16 +33,17 @@ class ContainerMiddleware implements EmitterMiddlewareInterface
         $this->container = $container;
     }
 
-
     /**
-     * @param $event
-     * @return EventInterface
+     * @param $eventDispatchLoop
+     *
+     * @return mixed
      */
-    public function queue($event): EventInterface
-    {
+    public function dispatch(
+        $eventDispatchLoop
+    ) {
         $stack = $this->executionChain();
 
-        return $stack($event);
+        return $stack($eventDispatchLoop);
     }
 
     /**
@@ -51,15 +52,15 @@ class ContainerMiddleware implements EmitterMiddlewareInterface
     private function executionChain(): callable
     {
         if (!$this->executionChain) {
-            $lastCallable = function (EventInterface $event) {
-                return $event;
+            $lastCallable = function ($dispatchLoop) {
+                return $dispatchLoop;
             };
 
             $plugins = $this->container->get(self::QUEUE_PLUGINS);
 
             while ($plugin = array_pop($plugins)) {
-                $lastCallable = function ($event) use ($plugin, $lastCallable) {
-                    return $plugin($event, $lastCallable);
+                $lastCallable = function ($eventDispatchLoop) use ($plugin, $lastCallable) {
+                    return $plugin($eventDispatchLoop, $lastCallable);
                 };
             }
 

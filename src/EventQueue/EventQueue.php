@@ -49,7 +49,7 @@ final class EventQueue implements EventQueueInterface
      * @param EventInterface[] ...$events
      * @return EventQueueInterface
      */
-    public function queueEvent(EventInterface ...$events): EventQueueInterface
+    public function queueEvent( ...$events): EventQueueInterface
     {
         return $this->queueEvents($events);
     }
@@ -67,7 +67,7 @@ final class EventQueue implements EventQueueInterface
         return $this;
     }
 
-    private function enqueueEvent(EventInterface $event)
+    private function enqueueEvent($event)
     {
         $this->queue->enqueue($event);
     }

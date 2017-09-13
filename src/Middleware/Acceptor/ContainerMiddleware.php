@@ -51,8 +51,8 @@ class ContainerMiddleware implements AcceptorMiddlewareInterface
     private function executionChain(): callable
     {
         if (!$this->executionChain) {
-            $lastCallable = function (EventInterface $event) {
-                return $event;
+            $lastCallable = function ($parts) {
+                return $parts;
             };
 
             $plugins = $this->container->get(self::LISTENER_PLUGINS);

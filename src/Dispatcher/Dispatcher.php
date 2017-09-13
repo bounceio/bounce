@@ -8,10 +8,12 @@
 namespace Bounce\Bounce\Dispatcher;
 
 use Bounce\Bounce\Acceptor\AcceptorInterface;
+use Bounce\Bounce\DispatchLoop\DispatchLoop;
 use Bounce\Bounce\EventQueue\EventQueue;
 use Bounce\Bounce\EventQueue\EventQueueInterface;
 use Bounce\Bounce\Middleware\Dispatcher\DispatcherMiddlewareInterface;
 use EventIO\InterOp\EventInterface;
+use stdClass;
 
 /**
  * Class Dispatcher
@@ -30,9 +32,9 @@ final class Dispatcher implements DispatcherInterface
     private $middleware;
 
     /**
-     * @var bool
+     * @var DispatchLoop
      */
-    private $dispatching = false;
+    private $currentLoop;
 
     /**
      * @param DispatcherMiddlewareInterface $dispatcherMiddleware
@@ -69,7 +71,7 @@ final class Dispatcher implements DispatcherInterface
      * @param EventInterface[] ...$events
      * @return DispatcherInterface
      */
-    public function enqueue(EventInterface ...$events): DispatcherInterface
+    public function enqueue(...$events): DispatcherInterface
     {
         $this->queue->queueEvents($events);
 
@@ -81,43 +83,55 @@ final class Dispatcher implements DispatcherInterface
      */
     public function isDispatching(): bool
     {
-        return $this->dispatching;
+        if ($this->currentLoop) {
+            return $this->currentLoop->isDispatching();
+        }
+        return false;
     }
 
     /**
      * @param AcceptorInterface $acceptor
+     * @param iterable          $events
+     *
      * @return DispatcherInterface
      */
-    public function dispatch(AcceptorInterface $acceptor): DispatcherInterface
-    {
-        $this->dispatching = true;
+    public function dispatch(
+        AcceptorInterface $acceptor,
+        iterable $events = []
+    ): DispatcherInterface  {
+        $this->enqueue($events);
 
         foreach ($this->queue->events() as $event) {
             $this->dispatchEvent($event, $acceptor);
         }
-        $this->dispatching = false;
 
         return $this;
     }
 
     /**
-     * @param EventInterface $event The event to dispatch through listeners
+     * @param mixed $event The event to dispatch through listeners
      * @param AcceptorInterface $acceptor
      */
     private function dispatchEvent(
-        EventInterface $event,
+        $event,
         AcceptorInterface $acceptor
     ) {
-        if (!$event->isPropagationStopped()) {
-            foreach ($acceptor->listenersFor($event) as $listener) {
+        $this->currentLoop = $this->createDispatchLoop($event, $acceptor);
+        $this->currentLoop->dispatch();
+    }
 
-                $this->middleware->dispatch($event, $listener);
+    /**
+     * @param $event
+     * @param $acceptor
+     *
+     * @return mixed
+     */
+    private function createDispatchLoop($event, $acceptor): DispatchLoop
+    {
+        $dispatchLoop               = new stdClass();
+        $dispatchLoop->event        = $event;
+        $dispatchLoop->listeners    = $acceptor->listenersFor($event);
 
-                if ($event->isPropagationStopped()) {
-                    return;
-                }
-                $listener->handle($event);
-            }
-        }
+        return DispatchLoop::fromDto($this->middleware->dispatch($dispatchLoop));
     }
 }

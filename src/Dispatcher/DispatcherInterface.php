@@ -12,10 +12,11 @@ use EventIO\InterOp\EventInterface;
 interface DispatcherInterface
 {
     /**
-     * @param EventInterface[] ...$events
+     * @param array ...$events
+     *
      * @return DispatcherInterface
      */
-    public function enqueue(EventInterface ...$events): DispatcherInterface;
+    public function enqueue(...$events): DispatcherInterface;
 
     /**
      * @return bool
@@ -24,7 +25,12 @@ interface DispatcherInterface
 
     /**
      * @param AcceptorInterface $acceptor
+     * @param iterable          $events
+     *
      * @return DispatcherInterface
      */
-    public function dispatch(AcceptorInterface $acceptor): DispatcherInterface;
+    public function dispatch(
+        AcceptorInterface $acceptor,
+        iterable $events = []
+    ): DispatcherInterface;
 }

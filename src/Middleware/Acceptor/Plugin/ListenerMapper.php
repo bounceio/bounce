@@ -29,6 +29,6 @@ class ListenerMapper implements AcceptorPluginInterface
             $parts = MappedListener::fromDto($parts);
         }
 
-        return $parts;
+        return $next($parts);
     }
 }

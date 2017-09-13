@@ -8,6 +8,7 @@
 namespace Bounce\Bounce;
 
 use Bounce\Bounce\Acceptor\AcceptorInterface;
+use Bounce\Bounce\Dispatcher\DispatcherInterface;
 use Bounce\Bounce\Middleware\Emitter\EmitterMiddlewareInterface;
 use EventIO\InterOp\EmitterInterface;
 use EventIO\InterOp\EventInterface;
@@ -24,21 +25,23 @@ final class Emitter implements EmitterInterface, ListenerAcceptorInterface
      */
     private $acceptor;
 
-
-    private $middleware;
+    /**
+     * @var DispatcherInterface
+     */
+    private $dispatcher;
 
     /**
      * Emitter constructor.
      *
-     * @param AcceptorInterface $acceptor
-     * @param EmitterMiddlewareInterface $middleware
+     * @param AcceptorInterface   $acceptor
+     * @param DispatcherInterface $dispatcher
      */
     public function __construct(
         AcceptorInterface $acceptor,
-        EmitterMiddlewareInterface $middleware
+        DispatcherInterface $dispatcher
     ) {
         $this->acceptor     = $acceptor;
-        $this->middleware   = $middleware;
+        $this->dispatcher   = $dispatcher;
     }
 
     /**
@@ -54,6 +57,30 @@ final class Emitter implements EmitterInterface, ListenerAcceptorInterface
         $priority = self::PRIORITY_NORMAL
     ) {
         $this->acceptor->addListener($eventName, $listener, $priority);
+
+        return $this;
+    }
+
+    /**
+     * @param EventInterface $event
+     *
+     * @return $this
+     */
+    public function emitEvent(EventInterface $event)
+    {
+        $this->emit($event);
+
+        return $this;
+    }
+
+    /**
+     * @param string $event
+     *
+     * @return $this
+     */
+    public function emitName($event)
+    {
+        $this->emit($event);
 
         return $this;
     }
@@ -77,45 +104,8 @@ final class Emitter implements EmitterInterface, ListenerAcceptorInterface
      */
     public function emitBatch(iterable $events): self
     {
-        foreach ($events as $event) {
-            $this->queueEvent($event);
-        }
+        $this->dispatcher->dispatch($this->acceptor, $events);
 
         return $this;
-    }
-
-    /**
-     * @param EventInterface $event
-     *
-     * @return $this
-     */
-    public function emitEvent(EventInterface $event)
-    {
-        $this->queueEvent($event);
-
-        return $this;
-    }
-
-    /**
-     * @param string $event
-     *
-     * @return $this
-     */
-    public function emitName($event)
-    {
-        $this->queueEvent($event);
-
-        return $this;
-    }
-
-    /**
-     * @param $event
-     */
-    private function queueEvent($event)
-    {
-        $event = $this->middleware->queue($event);
-        foreach ($this->acceptor->listenersFor($event) as $listener) {
-            $listener->handle($event);
-        }
     }
 }

@@ -16,9 +16,11 @@ use EventIO\InterOp\ListenerInterface;
 interface MappedListenerInterface
 {
     /**
-     * @return MapInterface
+     * @param $listener
+     *
+     * @return MappedListenerInterface
      */
-    public function map(): MapInterface;
+    public function withListener($listener): MappedListenerInterface;
 
     /**
      * @param $event

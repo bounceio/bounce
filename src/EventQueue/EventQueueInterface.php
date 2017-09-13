@@ -18,10 +18,15 @@ interface EventQueueInterface
      * @param EventInterface[] ...$events
      * @return EventQueueInterface
      */
-    public function queueEvent(EventInterface ...$events): EventQueueInterface;
+    public function queueEvent(...$events): EventQueueInterface;
 
-
+    /**
+     * @param iterable $events
+     *
+     * @return EventQueueInterface
+     */
     public function queueEvents(iterable $events): EventQueueInterface;
+
     /**
      * @return iterable
      */

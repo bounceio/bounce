@@ -8,6 +8,7 @@
 namespace Bounce\Bounce\MappedListener\Queue;
 
 use Bounce\Bounce\MappedListener\MappedListenerInterface;
+use Generator;
 use SplObjectStorage;
 use SplPriorityQueue;
 use SplQueue;
@@ -37,19 +38,6 @@ class PriorityQueue implements QueueInterface
         }
     }
 
-    /**
-     * @return Traversable
-     */
-    public function listeners(): Traversable
-    {
-        $prioritizedQueue = $this->prioritizedQueue();
-        while (!$prioritizedQueue->isEmpty()) {
-            $listeners = $prioritizedQueue->extract();
-            while (!$listeners->isEmpty()) {
-                yield $listeners->dequeue()->listener();
-            }
-        }
-    }
 
     /**
      * @param MappedListenerInterface[] ...$mappedListeners
@@ -65,6 +53,35 @@ class PriorityQueue implements QueueInterface
     }
 
     /**
+     * @return Traversable
+     */
+    public function listeners(): Traversable
+    {
+        $prioritizedQueue = $this->prioritizedQueue();
+        $prioritizedQueue->setExtractFlags(SplPriorityQueue::EXTR_BOTH);
+
+        while (!$prioritizedQueue->isEmpty()) {
+            yield from $this->releaseQueuedListeners($prioritizedQueue);
+        }
+    }
+
+    /**
+     * @param SplPriorityQueue $prioritizedQueue
+     *
+     * @return Generator
+     */
+    private function releaseQueuedListeners(SplPriorityQueue $prioritizedQueue): Generator
+    {
+        $prioritizedListeners = $prioritizedQueue->extract();
+        $priority             = $prioritizedListeners['priority'];
+        $listeners            = $prioritizedListeners['data'];
+
+        while (!$listeners->isEmpty()) {
+            yield $priority => $listeners->dequeue()->listener();
+        }
+    }
+
+    /**
      * @return SplPriorityQueue
      */
     private function prioritizedQueue(): SplPriorityQueue
@@ -77,13 +94,10 @@ class PriorityQueue implements QueueInterface
         }
 
         foreach (array_unique($priorities) as $priority) {
-            $queue = $this->createQueue();
-            foreach ($this->mappedListeners as $mappedListener) {
-                if ($mappedListener->priority() === $priority) {
-                    $queue->enqueue($mappedListener);
-                }
-            }
-            $prioritizedQueue->insert($queue, $priority);
+            $prioritizedQueue->insert(
+                $this->enqueueMappedListeners($priority),
+                $priority
+            );
         }
 
         return $prioritizedQueue;
@@ -96,6 +110,23 @@ class PriorityQueue implements QueueInterface
     {
         $queue = new SplQueue();
         $queue->setIteratorMode(SplQueue::IT_MODE_FIFO | SplQueue::IT_MODE_DELETE);
+
+        return $queue;
+    }
+
+    /**
+     * @param $priority
+     *
+     * @return SplQueue
+     */
+    private function enqueueMappedListeners($priority): SplQueue
+    {
+        $queue = $this->createQueue();
+        foreach ($this->mappedListeners as $mappedListener) {
+            if ($mappedListener->priority() === $priority) {
+                $queue->enqueue($mappedListener);
+            }
+        }
 
         return $queue;
     }

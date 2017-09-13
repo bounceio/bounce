@@ -14,6 +14,10 @@ use EventIO\InterOp\EventInterface;
 use EventIO\InterOp\ListenerInterface;
 use Traversable;
 
+/**
+ * Class Acceptor
+ * @package Bounce\Bounce\Acceptor
+ */
 final class Acceptor implements AcceptorInterface
 {
     /**
@@ -44,7 +48,7 @@ final class Acceptor implements AcceptorInterface
      * @param MappedListenerCollectionInterface $mappedListeners
      */
     private function __construct(
-        AcceptorMiddlewareInterface $middleware,
+        AcceptorMiddlewareInterface       $middleware,
         MappedListenerCollectionInterface $mappedListeners
     ) {
         $this->middleware       = $middleware;
@@ -73,7 +77,11 @@ final class Acceptor implements AcceptorInterface
         $listener,
         $priority = self::PRIORITY_NORMAL
     ) {
-        $mappedListener = $this->middleware->listenerAdd($eventName, $listener, $priority);
+        $mappedListener = $this->middleware->listenerAdd(
+            $eventName,
+            $listener,
+            $priority
+        );
 
         $this->mappedListeners->add($mappedListener);
 
