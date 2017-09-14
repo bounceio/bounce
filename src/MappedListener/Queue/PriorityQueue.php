@@ -74,11 +74,14 @@ class PriorityQueue implements QueueInterface
      */
     private function releaseQueuedListeners(SplPriorityQueue $prioritizedQueue): Generator
     {
-        $listeners = $prioritizedQueue->extract();
-
-        while (!$listeners->isEmpty()) {
-            yield $listeners->dequeue()->listener();
+        foreach($prioritizedQueue->extract() as $listener) {
+            yield $listener->listener();
         }
+//        $listeners = $prioritizedQueue->extract();
+//
+//        while (!$listeners->isEmpty()) {
+//            yield $listeners->dequeue()->listener();
+//        }
     }
 
     /**
@@ -99,31 +102,40 @@ class PriorityQueue implements QueueInterface
         return $prioritizedQueue;
     }
 
-    /**
-     * @return SplQueue
-     */
-    private function createQueue(): SplQueue
-    {
-        $queue = new SplQueue();
-        $queue->setIteratorMode(SplQueue::IT_MODE_FIFO | SplQueue::IT_MODE_DELETE);
+//    /**
+//     * @return SplQueue
+//     */
+//    private function createQueue(): SplQueue
+//    {
+//        $queue = new SplQueue();
+//        $queue->setIteratorMode(SplQueue::IT_MODE_FIFO | SplQueue::IT_MODE_DELETE);
+//
+//        return $queue;
+//    }
 
-        return $queue;
-    }
-
-    /**
-     * @param $priority
-     *
-     * @return SplQueue
-     */
-    private function enqueueMappedListeners($priority): SplQueue
+    private function enqueueMappedListeners($priority): Generator
     {
-        $queue = $this->createQueue();
         foreach ($this->mappedListeners as $mappedListener) {
             if ($mappedListener->priority() === $priority) {
-                $queue->enqueue($mappedListener);
+                yield $mappedListener;
             }
         }
-
-        return $queue;
     }
+
+//    /**
+//     * @param $priority
+//     *
+//     * @return SplQueue
+//     */
+//    private function enqueueMappedListeners($priority): SplQueue
+//    {
+//        $queue = $this->createQueue();
+//        foreach ($this->mappedListeners as $mappedListener) {
+//            if ($mappedListener->priority() === $priority) {
+//                $queue->enqueue($mappedListener);
+//            }
+//        }
+//
+//        return $queue;
+//    }
 }

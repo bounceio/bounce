@@ -58,8 +58,12 @@ for ($i=0; $i<10000; $i++) {
     }
 }
 
+$mappedListeners = $container['mapped_listeners'];
+
+//array_rand()
+
 foreach ($listeners as $listener) {
-    $container['mapped_listeners']->add(
+    $mappedListeners->add(
         MappedListener::create(
             $map,
             $listener,
@@ -69,11 +73,14 @@ foreach ($listeners as $listener) {
 }
 
 $event                  = Named::create($eventName);
-
+$start = microtime();
 for ($i=0; $i<100; $i++) {
     $dto                    = new stdClass();
     $dto->event     = $event;
-    $dto->listeners = $container['mapped_listeners']->listenersFor($event);
+    $dto->listeners = $mappedListeners->listenersFor($event);
     $dispatchLoop   = DispatchLoop::fromDto($container['dispatcher_middleware']->dispatch($dto));
     $dispatchLoop->dispatch();
 }
+$end = microtime();
+echo $start . "\n";
+echo $end . "\n";
