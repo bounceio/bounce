@@ -70,10 +70,7 @@ class CallableListeners
     private function callableFromListener($listener): ListenerInterface
     {
         if ( (!$listener instanceof ListenerInterface) && (is_callable($listener))) {
-            echo "Upgrading to callablelistener\n";
-            $callableListener = new CallableListener($listener);
-            $this->listenerMapCollection->replaceListener($listener, $callableListener);
-            $listener = $callableListener;
+            $listener = new CallableListener($listener);
         }
 
         return $listener;

@@ -59,28 +59,6 @@ class MappedListeners implements MappedListenerCollectionInterface
     }
 
     /**
-     * @param $originalListener
-     * @param $newListener
-     *
-     * @return $this
-     */
-    public function replaceListener(
-        $originalListener,
-        $newListener
-    ): MappedListenerCollectionInterface {
-        foreach ($this->mappedListeners as $mappedListener) {
-            if ($mappedListener->listener() === $originalListener) {
-                $this->replace(
-                    $mappedListener,
-                    $mappedListener->withListener($newListener)
-                );
-            }
-        }
-
-        return $this;
-    }
-
-    /**
      * {@inheritdoc}
      */
     public function listenersFor(EventInterface $event): Traversable
@@ -93,13 +71,5 @@ class MappedListeners implements MappedListenerCollectionInterface
         }
 
         yield from $queue->listeners();
-    }
-
-    private function replace(
-        MappedListenerInterface $old,
-        MappedListenerInterface $new
-    ) {
-        $this->mappedListeners->offsetUnset($old);
-        $this->mappedListeners->offsetSet($new);
     }
 }

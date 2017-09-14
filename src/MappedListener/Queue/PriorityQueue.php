@@ -25,19 +25,21 @@ class PriorityQueue implements QueueInterface
      */
     private $mappedListeners;
 
+    private $priorities;
+
     /**
      * PriorityQueue constructor.
      * @param array $mappedListeners
      */
-    public function __construct($mappedListeners = [])
+    public function __construct(iterable $mappedListeners = [])
     {
+        $this->priorities = [];
         $this->mappedListeners = new SplObjectStorage();
 
         foreach ($mappedListeners as $mappedListener) {
             $this->queue($mappedListener);
         }
     }
-
 
     /**
      * @param MappedListenerInterface[] ...$mappedListeners
@@ -47,6 +49,7 @@ class PriorityQueue implements QueueInterface
     {
         foreach ($mappedListeners as $mappedListener) {
             $this->mappedListeners->attach($mappedListener);
+            $this->priorities[] = $mappedListener->priority();
         }
 
         return $this;
@@ -58,7 +61,6 @@ class PriorityQueue implements QueueInterface
     public function listeners(): Traversable
     {
         $prioritizedQueue = $this->prioritizedQueue();
-        $prioritizedQueue->setExtractFlags(SplPriorityQueue::EXTR_BOTH);
 
         while (!$prioritizedQueue->isEmpty()) {
             yield from $this->releaseQueuedListeners($prioritizedQueue);
@@ -72,12 +74,10 @@ class PriorityQueue implements QueueInterface
      */
     private function releaseQueuedListeners(SplPriorityQueue $prioritizedQueue): Generator
     {
-        $prioritizedListeners = $prioritizedQueue->extract();
-        $priority             = $prioritizedListeners['priority'];
-        $listeners            = $prioritizedListeners['data'];
+        $listeners = $prioritizedQueue->extract();
 
         while (!$listeners->isEmpty()) {
-            yield $priority => $listeners->dequeue()->listener();
+            yield $listeners->dequeue()->listener();
         }
     }
 
@@ -87,13 +87,9 @@ class PriorityQueue implements QueueInterface
     private function prioritizedQueue(): SplPriorityQueue
     {
         $prioritizedQueue = new SplPriorityQueue();
+        $this->priorities = array_unique($this->priorities);
 
-        $priorities = [];
-        foreach ($this->mappedListeners as $mappedListener) {
-            $priorities[] = $mappedListener->priority();
-        }
-
-        foreach (array_unique($priorities) as $priority) {
+        foreach ($this->priorities as $priority) {
             $prioritizedQueue->insert(
                 $this->enqueueMappedListeners($priority),
                 $priority

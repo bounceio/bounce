@@ -17,17 +17,6 @@ use Traversable;
 interface MappedListenerCollectionInterface
 {
     /**
-     * @param $originalListener
-     * @param $newListener
-     *
-     * @return MappedListenerCollectionInterface
-     */
-    public function replaceListener(
-        $originalListener,
-        $newListener
-    ): MappedListenerCollectionInterface;
-
-    /**
      * @param MappedListenerInterface[] ...$mappedListener
      * @return mixed
      */

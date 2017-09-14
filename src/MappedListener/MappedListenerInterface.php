@@ -16,13 +16,6 @@ use EventIO\InterOp\ListenerInterface;
 interface MappedListenerInterface
 {
     /**
-     * @param $listener
-     *
-     * @return MappedListenerInterface
-     */
-    public function withListener($listener): MappedListenerInterface;
-
-    /**
      * @param $event
      *
      * @return bool

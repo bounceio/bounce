@@ -48,18 +48,15 @@ $eventName = 'foo';
 
 $map = Glob::create($eventName);
 
-$listeners = [
-    function(EventInterface $event) {
-        var_dump('foo');
-    },
-    function(EventInterface $event) {
-        //$event->stopPropagation();
-        var_dump('bar');
-    },
-    function(EventInterface $event) {
-        var_dump('baz');
-    },
-];
+$listeners = [];
+
+for ($i=0; $i<10000; $i++) {
+    foreach(['foo', 'bar', 'baz'] as $str) {
+        $listeners[] = function(EventInterface $event) use($i, $str) {
+            echo "$i: $str\n";
+        };
+    }
+}
 
 foreach ($listeners as $listener) {
     $container['mapped_listeners']->add(
@@ -72,13 +69,11 @@ foreach ($listeners as $listener) {
 }
 
 $event                  = Named::create($eventName);
-$dispatchLoop           = new stdClass();
-$dispatchLoop->event    = $event;
 
-$dispatchLoop->listeners = $container['mapped_listeners']->listenersFor($event);
-
-$dispatchLoop = DispatchLoop::fromDto($container['dispatcher_middleware']->dispatch($dispatchLoop));
-
-for ($i=0; $i<10000; $i++) {
+for ($i=0; $i<100; $i++) {
+    $dto                    = new stdClass();
+    $dto->event     = $event;
+    $dto->listeners = $container['mapped_listeners']->listenersFor($event);
+    $dispatchLoop   = DispatchLoop::fromDto($container['dispatcher_middleware']->dispatch($dto));
     $dispatchLoop->dispatch();
 }

@@ -74,16 +74,16 @@ class DispatchLoop
     private function dispatchEventToListeners()
     {
         $listeners          = $this->listeners();
-        $loadedListeners    = [];
+        //$loadedListeners    = [];
 
         while ((!$this->event->isPropagationStopped()) && $listeners->valid()) {
             $listener = $listeners->current();
-            $loadedListeners[] = $listener;
+
             $this->dispatchListener($listener);
             $listeners->next();
         }
 
-        $this->listeners = $loadedListeners;
+        //$this->listeners = $loadedListeners;
     }
 
     /**

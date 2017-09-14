@@ -26,7 +26,6 @@ class MappedListener implements MappedListenerInterface
      */
     private $listener;
 
-
     /**
      * @var mixed
      */
@@ -75,20 +74,6 @@ class MappedListener implements MappedListenerInterface
         $this->map      = $map;
         $this->listener = $listener;
         $this->priority = $priority;
-    }
-
-    /**
-     * @param $listener
-     *
-     * @return MappedListenerInterface
-     */
-    public function withListener($listener): MappedListenerInterface
-    {
-        return new self(
-            $this->map,
-            $listener,
-            $this->priority
-        );
     }
 
     /**
