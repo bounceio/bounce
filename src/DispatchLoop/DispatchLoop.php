@@ -62,6 +62,7 @@ class DispatchLoop
     public function dispatch()
     {
         $this->dispatching = true;
+
         $this->dispatchEventToListeners();
         $this->dispatching = false;
 
@@ -74,16 +75,13 @@ class DispatchLoop
     private function dispatchEventToListeners()
     {
         $listeners          = $this->listeners();
-        //$loadedListeners    = [];
 
-        while ((!$this->event->isPropagationStopped()) && $listeners->valid()) {
+        while ($this->continueDispatching($listeners)) {
             $listener = $listeners->current();
 
             $this->dispatchListener($listener);
             $listeners->next();
         }
-
-        //$this->listeners = $loadedListeners;
     }
 
     /**
@@ -102,6 +100,11 @@ class DispatchLoop
     private function dispatchListener(ListenerInterface $listener)
     {
         $listener->handle($this->event);
+    }
+
+    private function continueDispatching(Generator $listeners)
+    {
+        return (!$this->event->isPropagationStopped()) && $listeners->valid();
     }
 
 }

@@ -7,10 +7,9 @@
 
 namespace Bounce\Bounce\Middleware\Dispatcher\Plugin;
 
-use Bounce\Bounce\Event\Named;
 use Bounce\Bounce\Listener\CallableListener;
 use Bounce\Bounce\MappedListener\Collection\MappedListenerCollectionInterface;
-use EventIO\InterOp\EventInterface;
+use Ds\Map;
 use EventIO\InterOp\ListenerInterface;
 use Generator;
 
@@ -23,16 +22,14 @@ class CallableListeners
     /**
      * @var MappedListenerCollectionInterface
      */
-    private $listenerMapCollection;
+    private $listenerMap;
 
     /**
      * CallableListeners constructor.
-     *
-     * @param MappedListenerCollectionInterface $listenerMapCollection
      */
-    public function __construct(MappedListenerCollectionInterface $listenerMapCollection)
+    public function __construct()
     {
-        $this->listenerMapCollection = $listenerMapCollection;
+        $this->listenerMap = new Map();
     }
 
 
@@ -58,7 +55,11 @@ class CallableListeners
     public function callables(iterable $listeners): Generator
     {
         foreach ($listeners as $listener) {
-            yield $this->callableFromListener($listener);
+            if (is_callable($listener)) {
+                $listener = $this->callableFromListener($listener);
+            }
+
+            yield $listener;
         }
     }
 
@@ -67,13 +68,28 @@ class CallableListeners
      *
      * @return ListenerInterface
      */
-    private function callableFromListener($listener): ListenerInterface
+    private function callableFromListener(callable $listener): ListenerInterface
     {
-        if ( (!$listener instanceof ListenerInterface) && (is_callable($listener))) {
-            $listener = new CallableListener($listener);
+        if (!$listener instanceof ListenerInterface) {
+            $listener = $this->mapCallabaleListener($listener);
         }
 
         return $listener;
+    }
+
+    /**
+     * @param $listener
+     *
+     * @return mixed
+     */
+    private function mapCallabaleListener($listener)
+    {
+        if (!$this->listenerMap->hasKey($listener)) {
+            $callableListener = new CallableListener($listener);
+            $this->listenerMap->put($listener, $callableListener);
+        }
+
+        return $this->listenerMap->get($listener);
     }
 
 }

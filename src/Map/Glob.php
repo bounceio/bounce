@@ -7,6 +7,7 @@
 
 namespace Bounce\Bounce\Map;
 
+use Ds\Set;
 use EventIO\InterOp\EventInterface;
 
 /**
@@ -46,11 +47,7 @@ final class Glob implements MapInterface
      */
     private function __construct(iterable $globPatterns)
     {
-        $this->patterns = [];
-
-        foreach ($globPatterns as $globPattern) {
-            $this->patterns[] = (string) $globPattern;
-        }
+        $this->patterns = new Set($globPatterns);
     }
 
 

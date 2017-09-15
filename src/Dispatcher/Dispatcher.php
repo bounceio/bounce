@@ -86,6 +86,7 @@ final class Dispatcher implements DispatcherInterface
         if ($this->currentLoop) {
             return $this->currentLoop->isDispatching();
         }
+
         return false;
     }
 
@@ -99,6 +100,7 @@ final class Dispatcher implements DispatcherInterface
         AcceptorInterface $acceptor,
         iterable $events = []
     ): DispatcherInterface  {
+
         $this->enqueue($events);
 
         foreach ($this->queue->events() as $event) {
@@ -116,7 +118,10 @@ final class Dispatcher implements DispatcherInterface
         $event,
         AcceptorInterface $acceptor
     ) {
-        $this->currentLoop = $this->createDispatchLoop($event, $acceptor);
+        $this->currentLoop = $this->createDispatchLoop(
+            $event,
+            $acceptor
+        );
         $this->currentLoop->dispatch();
     }
 

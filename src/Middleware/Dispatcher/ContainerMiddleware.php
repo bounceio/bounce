@@ -7,7 +7,8 @@
 
 namespace Bounce\Bounce\Middleware\Dispatcher;
 
-use Bounce\Bounce\Acceptor\AcceptorInterface;
+use Ds\Stack;
+use Generator;
 use Psr\Container\ContainerInterface;
 
 class ContainerMiddleware implements DispatcherMiddlewareInterface
@@ -41,9 +42,9 @@ class ContainerMiddleware implements DispatcherMiddlewareInterface
     public function dispatch(
         $eventDispatchLoop
     ) {
-        $stack = $this->executionChain();
+        $excecutionChain = $this->executionChain();
 
-        return $stack($eventDispatchLoop);
+        return $excecutionChain($eventDispatchLoop);
     }
 
     /**
@@ -56,9 +57,7 @@ class ContainerMiddleware implements DispatcherMiddlewareInterface
                 return $dispatchLoop;
             };
 
-            $plugins = $this->container->get(self::QUEUE_PLUGINS);
-
-            while ($plugin = array_pop($plugins)) {
+            foreach ($this->pluginStack() as $plugin) {
                 $lastCallable = function ($eventDispatchLoop) use ($plugin, $lastCallable) {
                     return $plugin($eventDispatchLoop, $lastCallable);
                 };
@@ -68,5 +67,27 @@ class ContainerMiddleware implements DispatcherMiddlewareInterface
         }
 
         return $this->executionChain;
+    }
+
+    private function pluginStack(): Generator
+    {
+        $plugins = $this->plugins();
+
+        while (!$plugins->isEmpty()) {
+            yield $plugins->pop();
+        }
+    }
+
+    /**
+     * @return \Ds\Stack
+     */
+    private function plugins(): Stack
+    {
+        $stack = new Stack();
+        foreach ($this->container->get(self::QUEUE_PLUGINS) as $plugin) {
+            $stack->push($plugin);
+        }
+
+        return $stack;
     }
 }

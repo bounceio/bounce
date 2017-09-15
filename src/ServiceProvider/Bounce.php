@@ -41,12 +41,12 @@ class Bounce implements ServiceProviderInterface
             return MappedListeners::create();
         };
 
-        $pimple[self::ACCEPTOR_MIDDLEWARE] = function () {
-            return new AcceptorMiddleware();
-        };
+//        $pimple[self::ACCEPTOR_MIDDLEWARE] = function () {
+//            return new ContainerMiddleware();
+//        };
 
         $pimple[self::ACCEPTOR] = function (Container $con) {
-            return new Acceptor(
+            return Acceptor::create(
                 $con[self::ACCEPTOR_MIDDLEWARE],
                 $con[self::MAPPED_LISTENER_COLLECTION]
             );

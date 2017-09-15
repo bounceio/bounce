@@ -10,7 +10,7 @@ namespace Bounce\Bounce\MappedListener\Collection;
 use Bounce\Bounce\MappedListener\MappedListenerInterface;
 use Bounce\Bounce\MappedListener\Queue\PriorityQueue;
 use EventIO\InterOp\EventInterface;
-use SplObjectStorage;
+use Ds\Set;
 use Traversable;
 
 /**
@@ -20,7 +20,7 @@ use Traversable;
 class MappedListeners implements MappedListenerCollectionInterface
 {
     /**
-     * @var SplObjectStorage
+     * @var Set
      */
     private $mappedListeners;
 
@@ -39,7 +39,7 @@ class MappedListeners implements MappedListenerCollectionInterface
      */
     private function __construct(iterable $mappedListeners = [])
     {
-        $this->mappedListeners = new SplObjectStorage();
+        $this->mappedListeners = new Set();
 
         foreach ($mappedListeners as $mappedListener) {
             $this->add($mappedListener);
@@ -51,9 +51,18 @@ class MappedListeners implements MappedListenerCollectionInterface
      */
     public function add(MappedListenerInterface ...$mappedListeners)
     {
-        foreach ($mappedListeners as $mappedListener) {
-            $this->mappedListeners->attach($mappedListener);
-        }
+        return $this->addListeners($mappedListeners);
+    }
+
+    /**
+     * @param iterable $mappedListeners
+     *
+     * @return $this
+     */
+    public function addListeners(iterable $mappedListeners)
+    {
+        $mappedListeners       = new Set($mappedListeners);
+        $this->mappedListeners = $this->mappedListeners->union($mappedListeners);
 
         return $this;
     }
@@ -63,13 +72,26 @@ class MappedListeners implements MappedListenerCollectionInterface
      */
     public function listenersFor(EventInterface $event): Traversable
     {
-        $queue = new PriorityQueue();
-        foreach ($this->mappedListeners as $mappedListener) {
-            if ($mappedListener->matches($event)) {
-                $queue->queue($mappedListener);
-            }
-        }
+        $queue = $this->queueFor($event);
 
         yield from $queue->listeners();
+    }
+
+    /**
+     * @param \EventIO\InterOp\EventInterface $event
+     *
+     * @return \Bounce\Bounce\MappedListener\Queue\PriorityQueue
+     */
+    private function queueFor(EventInterface $event): PriorityQueue
+    {
+        $queue = new PriorityQueue();
+
+        $filter = function(MappedListenerInterface $mappedListener) use ($event) {
+            return $mappedListener->matches($event);
+        };
+
+        $mappedListeners = $this->mappedListeners->filter($filter);
+
+        return $queue->queueListeners($mappedListeners);
     }
 }

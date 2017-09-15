@@ -7,6 +7,7 @@
 
 namespace Bounce\Bounce\Map;
 
+use Ds\Set;
 use EventIO\InterOp\EventInterface;
 
 /**
@@ -15,7 +16,7 @@ use EventIO\InterOp\EventInterface;
 final class EventType implements MapInterface
 {
     /**
-     * @var array
+     * @var \Ds\Set
      */
     private $eventTypes;
 
@@ -25,7 +26,7 @@ final class EventType implements MapInterface
      */
     public function __construct(string ...$eventTypes)
     {
-        $this->eventTypes = $eventTypes;
+        $this->eventTypes = new Set($eventTypes);
     }
 
     /**
@@ -43,10 +44,6 @@ final class EventType implements MapInterface
     {
         $match = false;
         foreach ($this->eventTypes as $eventType) {
-//            if (!(interface_exists($eventType) || class_exists($eventType))) {
-//                $msg = 'No such interface or class as %s exists';
-//                throw new \RuntimeException(sprintf($msg, $eventType));
-//            }
             // see https://veewee.github.io/blog/optimizing-php-performance-by-fq-function-calls/
             if (\is_a($event, $eventType)) {
                 $match = true;

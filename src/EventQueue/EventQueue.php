@@ -7,8 +7,8 @@
 
 namespace Bounce\Bounce\EventQueue;
 
+use Ds\Queue;
 use EventIO\InterOp\EventInterface;
-use SplQueue;
 
 final class EventQueue implements EventQueueInterface
 {
@@ -18,13 +18,12 @@ final class EventQueue implements EventQueueInterface
     private $queue;
 
     /**
-     * @param Iterator|null $events Events to queue
+     * @param iterable $events Events to queue
      * @return EventQueue
      */
     public static function create(iterable $events = null)
     {
-        $queue = new SplQueue();
-        $queue->setIteratorMode(SplQueue::IT_MODE_DELETE);
+        $queue = new Queue();
 
         $eventQueue = new self($queue);
         if ($events) {
@@ -38,9 +37,10 @@ final class EventQueue implements EventQueueInterface
 
     /**
      * EventQueue constructor.
-     * @param SplQueue $queue An SplQueue to put events into
+     *
+     * @param \Ds\Queue $queue An SplQueue to put events into
      */
-    private function __construct(SplQueue $queue)
+    private function __construct(Queue $queue)
     {
         $this->queue = $queue;
     }
@@ -61,15 +61,10 @@ final class EventQueue implements EventQueueInterface
     public function queueEvents(iterable $events): EventQueueInterface
     {
         foreach ($events as $event) {
-            $this->enqueueEvent($event);
+            $this->queue->push($event);
         }
 
         return $this;
-    }
-
-    private function enqueueEvent($event)
-    {
-        $this->queue->enqueue($event);
     }
 
     /**
@@ -78,7 +73,7 @@ final class EventQueue implements EventQueueInterface
     public function events(): iterable
     {
         while (!$this->queue->isEmpty()) {
-            yield $this->queue->dequeue();
+            yield $this->queue->pop();
         }
     }
 }
