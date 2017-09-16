@@ -9,8 +9,10 @@ namespace Bounce\Bounce\MappedListener\Collection;
 
 use Bounce\Bounce\MappedListener\MappedListenerInterface;
 use Bounce\Bounce\MappedListener\Queue\PriorityQueue;
+use Ds\Map;
 use EventIO\InterOp\EventInterface;
 use Ds\Set;
+use Symfony\Component\EventDispatcher\Event;
 use Traversable;
 
 /**
@@ -23,6 +25,8 @@ class MappedListeners implements MappedListenerCollectionInterface
      * @var Set
      */
     private $mappedListeners;
+
+    private $queues;
 
     /**
      * @param MappedListenerInterface[] ...$mappedListeners
@@ -40,6 +44,8 @@ class MappedListeners implements MappedListenerCollectionInterface
     private function __construct(iterable $mappedListeners = [])
     {
         $this->mappedListeners = new Set();
+
+        $this->queues = new Map();
 
         foreach ($mappedListeners as $mappedListener) {
             $this->add($mappedListener);
@@ -86,12 +92,23 @@ class MappedListeners implements MappedListenerCollectionInterface
     {
         $queue = new PriorityQueue();
 
-        $filter = function(MappedListenerInterface $mappedListener) use ($event) {
-            return $mappedListener->matches($event);
-        };
-
-        $mappedListeners = $this->mappedListeners->filter($filter);
+        $mappedListeners = $this->mappedListenersFor($event);
 
         return $queue->queueListeners($mappedListeners);
+    }
+
+    private function mappedListenersFor(EventInterface $event)
+    {
+        if (!$this->queues->hasKey($event)) {
+            $filter = function(MappedListenerInterface $mappedListener) use ($event) {
+                return $mappedListener->matches($event);
+            };
+
+            $mappedListeners = $this->mappedListeners->filter($filter);
+
+            $this->queues->put($event, $mappedListeners);
+        }
+
+        return $this->queues->get($event);
     }
 }

@@ -32,14 +32,18 @@ $container[ContainerMiddleware::QUEUE_PLUGINS] = function($con) {
     yield $con['callable_listeners'];
 };
 
-$serviceLocator = new \Pimple\Psr11\ServiceLocator(
-    $container,
-    [ContainerMiddleware::QUEUE_PLUGINS]
-);
 
-$container['dispatcher_middleware'] = new ContainerMiddleware(
-    $serviceLocator
-);
+
+$container['dispatcher_middleware'] = function($con) {
+    $serviceLocator = new \Pimple\Psr11\ServiceLocator(
+        $con,
+        [ContainerMiddleware::QUEUE_PLUGINS]
+    );
+
+    return new ContainerMiddleware(
+        $serviceLocator
+    );
+};
 
 $eventName = 'foo';
 
@@ -59,7 +63,7 @@ $counter        = new stdClass();
 $counter->count = 0;
 
 $listeners = function($map, $priorities) use($counter) {
-    for ($i=0; $i<1000; $i++) {
+    for ($i=0; $i<10; $i++) {
         foreach(['foo', 'bar', 'baz'] as $str) {
             $priority = array_rand($priorities);
 
@@ -81,11 +85,14 @@ $listeners = function($map, $priorities) use($counter) {
 
 $mappedListeners->addListeners($listeners($map, $priorities));
 
-$event = Named::create($eventName);
-
+$event                = Named::create($eventName);
 $dispatcherMiddleware = $container['dispatcher_middleware'];
 
-for ($i=0; $i<10000; $i++) {
+//$dispatcher = Dispatcher::create(
+//    $container['dispatcher_middleware']
+//);
+
+for ($i=0; $i<10; $i++) {
     $dto            = new stdClass();
     $dto->event     = $event;
     $dto->listeners = $mappedListeners->listenersFor($event);

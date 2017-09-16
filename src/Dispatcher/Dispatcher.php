@@ -103,11 +103,18 @@ final class Dispatcher implements DispatcherInterface
 
         $this->enqueue($events);
 
-        foreach ($this->queue->events() as $event) {
-            $this->dispatchEvent($event, $acceptor);
+        if (!$this->isDispatching()) {
+            $this->dispatchQueue($acceptor);
         }
 
         return $this;
+    }
+
+    public function dispatchQueue(AcceptorInterface $acceptor)
+    {
+        foreach ($this->queue->events() as $event) {
+            $this->dispatchEvent($event, $acceptor);
+        }
     }
 
     /**
