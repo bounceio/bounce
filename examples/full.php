@@ -3,63 +3,41 @@
 use Bounce\Bounce\Acceptor\Acceptor;
 use Bounce\Bounce\Dispatcher\Dispatcher;
 use Bounce\Bounce\MappedListener\Collection\MappedListeners;
-
-use Bounce\Bounce\Middleware\Acceptor\Plugin\Cartography;
-use Bounce\Bounce\Middleware\Acceptor\Plugin\ListenerMapper;
-use Bounce\Bounce\Middleware\Dispatcher\Plugin\CallableListeners;
-use Bounce\Bounce\Middleware\Dispatcher\Plugin\NamedEvent;
-use Pimple\Container;
 use Bounce\Bounce\Middleware\Acceptor\ContainerMiddleware as AcceptorMiddleware;
 use Bounce\Bounce\Middleware\Dispatcher\ContainerMiddleware as DispatcherMiddleware;
+use Bounce\Bounce\Middleware\Dispatcher\Plugin\CallableListeners;
+use Bounce\Bounce\Middleware\Dispatcher\Plugin\NamedEvent;
+use Bounce\Bounce\ServiceProvider\Middleware\AcceptorServiceProvider;
+use Bounce\Bounce\ServiceProvider\Middleware\DispatcherServiceProvider;
+use Pimple\Container;
 
 require_once __DIR__.'/../vendor/autoload.php';
 
 $pimple = new Container();
 
-$pimple[AcceptorMiddleware::LISTENER_PLUGINS] = function() {
-  yield Cartography::create();
-  yield new ListenerMapper();
-};
+$pimple->register(new AcceptorServiceProvider());
+$pimple->register(new DispatcherServiceProvider());
 
-$container = new Pimple\Psr11\Container($pimple);
 
-$pimple['named_event'] = function() {
-    return new NamedEvent();
-};
+$acceptor   = Acceptor::create(
+    $pimple['bounce.middleware.acceptor'],
+    MappedListeners::create()
+);
 
-$pimple['mapped_listeners'] = function(): MappedListeners {
-    return MappedListeners::create();
-};
-
-$pimple['callable_listeners'] = function() {
-    return new CallableListeners();
-};
-
-$pimple[DispatcherMiddleware::QUEUE_PLUGINS] = function($con) {
-    yield $con['named_event'];
-    yield $con['callable_listeners'];
-};
-
-$pimple['dispatcher_middleware'] = function($con) {
-    $serviceLocator = new \Pimple\Psr11\ServiceLocator(
-        $con,
-        [DispatcherMiddleware::QUEUE_PLUGINS]
-    );
-
-    return new DispatcherMiddleware(
-        $serviceLocator
-    );
-};
-
-$acceptorMiddleware = new AcceptorMiddleware($container);
-
-$acceptor = Acceptor::create($acceptorMiddleware, MappedListeners::create());
-
-$dispatcherMiddleware = $pimple['dispatcher_middleware'];
-$dispatcher = Dispatcher::create($dispatcherMiddleware);
+$dispatcher = Dispatcher::create($pimple['bounce.middleware.dispatcher']);
 
 $emitter = new \Bounce\Bounce\Emitter($acceptor, $dispatcher);
 
-$emitter->addListener('foo', function($event) { var_dump($event); });
+$emitter->addListener('*', function($event) use ($emitter) {
+    var_dump($event);
+    $emitter->emit('bar');
+});
+
+$emitter->addListener('*', function($event) use ($emitter) {
+    var_dump('here', $event);
+    if ($event->name() == 'bar') {
+        die('here');
+    }
+});
 
 $emitter->emit('foo');

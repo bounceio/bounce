@@ -14,7 +14,7 @@ use stdClass;
 
 class ContainerMiddleware implements AcceptorMiddlewareInterface
 {
-    const LISTENER_PLUGINS = 'bounce.middleware.acceptor.plugins.add_listener';
+    const LISTENER_PLUGINS = 'bounce.middleware.acceptor.plugins';
 
     /**
      * @var ContainerInterface

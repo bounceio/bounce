@@ -14,7 +14,7 @@ use Psr\Container\ContainerInterface;
 
 class ContainerMiddleware implements DispatcherMiddlewareInterface
 {
-    const QUEUE_PLUGINS = 'bounce.middleware.emitter.plugins.event';
+    const QUEUE_PLUGINS = 'bounce.middleware.dispatcher.plugins';
 
     /**
      * @var ContainerInterface
