@@ -20,6 +20,13 @@ use Pimple\ServiceProviderInterface;
  */
 class DispatcherServiceProvider implements ServiceProviderInterface
 {
+    const MIDDLEWARE                            = 'bounce.middleware.dispatcher';
+    const MIDDLEWARE_CONTAINER                  = self::MIDDLEWARE.'.container_middleware';
+    const MIDDLEWARE_CONTAINER_SERVICE_LOCATOR  = self::MIDDLEWARE_CONTAINER.'.service_locator';
+    const MIDDLEWARE_PLUGINS                    = self::MIDDLEWARE.'.plugins';
+    const MIDDLEWARE_PLUGINS_CALLABLE_LISTENERS = self::MIDDLEWARE_PLUGINS.'.callable_listeners';
+    const MIDDLEWARE_PLUGINS_NAMED_EVENT        = self::MIDDLEWARE_PLUGINS.'.named_event';
+
     /**
      * Registers services on the given container.
      *
@@ -30,34 +37,34 @@ class DispatcherServiceProvider implements ServiceProviderInterface
      */
     public function register(Container $pimple)
     {
-        $pimple['bounce.middleware.dispatcher.plugins.named_event'] = function() {
+        $pimple[self::MIDDLEWARE_PLUGINS_NAMED_EVENT] = function() {
             return new NamedEvent();
         };
 
-        $pimple['bounce.middleware.dispatcher.plugins.callable_listeners'] = function() {
+        $pimple[self::MIDDLEWARE_PLUGINS_CALLABLE_LISTENERS] = function() {
             return new CallableListeners();
         };
 
-        $pimple['bounce.middleware.dispatcher.plugins'] = function(Container $con) {
-            yield $con['bounce.middleware.dispatcher.plugins.named_event'];
-            yield $con['bounce.middleware.dispatcher.plugins.callable_listeners'];
+        $pimple[self::MIDDLEWARE_PLUGINS] = function(Container $con) {
+            yield $con[self::MIDDLEWARE_PLUGINS_NAMED_EVENT];
+            yield $con[self::MIDDLEWARE_PLUGINS_CALLABLE_LISTENERS];
         };
 
-        $pimple['bounce.middleware.dispatcher.container_middleware.service_locator'] = function(Container $con) {
+        $pimple[self::MIDDLEWARE_CONTAINER_SERVICE_LOCATOR] = function(Container $con) {
             return new ServiceLocator(
                 $con,
-                ['bounce.middleware.dispatcher.plugins']
+                [self::MIDDLEWARE_PLUGINS]
             );
         };
 
-        $pimple['bounce.middleware.dispatcher.container_middleware'] = function(Container $con) {
+        $pimple[self::MIDDLEWARE_CONTAINER] = function(Container $con) {
             return new ContainerMiddleware(
-                $con['bounce.middleware.dispatcher.container_middleware.service_locator']
+                $con[self::MIDDLEWARE_CONTAINER_SERVICE_LOCATOR]
             );
         };
 
-        $pimple['bounce.middleware.dispatcher'] = function(Container $con) {
-            return $con['bounce.middleware.dispatcher.container_middleware'];
+        $pimple[self::MIDDLEWARE] = function(Container $con) {
+            return $con[self::MIDDLEWARE_CONTAINER];
         };
     }
 }

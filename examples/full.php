@@ -21,7 +21,7 @@ $acceptor   = Acceptor::create(
     MappedListeners::create()
 );
 
-$dispatcher = Dispatcher::create($pimple['bounce.middleware.dispatcher']);
+$dispatcher = Dispatcher::create($pimple[DispatcherServiceProvider::MIDDLEWARE]);
 
 $emitter = new Emitter($acceptor, $dispatcher);
 
