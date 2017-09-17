@@ -56,7 +56,26 @@ final class Emitter implements EmitterInterface, ListenerAcceptorInterface
         $listener,
         $priority = self::PRIORITY_NORMAL
     ) {
-        $this->acceptor->addListener($eventName, $listener, $priority);
+        return $this->addListeners(
+            $eventName,
+            [$listener],
+            $priority
+        );
+    }
+
+    /**
+     * @param $eventName
+     * @param iterable $listeners
+     * @param int $priority
+     * @return $this
+     */
+    public function addListeners(
+        $eventName,
+        iterable $listeners,
+        $priority = self::PRIORITY_NORMAL
+    ): self {
+
+        $this->acceptor->addListeners($eventName, $listeners, $priority);
 
         return $this;
     }

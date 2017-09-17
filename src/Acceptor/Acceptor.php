@@ -9,9 +9,11 @@ namespace Bounce\Bounce\Acceptor;
 
 use Bounce\Bounce\MappedListener\Collection\MappedListenerCollectionInterface;
 use Bounce\Bounce\MappedListener\Collection\MappedListeners;
+use Bounce\Bounce\MappedListener\MappedListenerInterface;
 use Bounce\Bounce\Middleware\Acceptor\AcceptorMiddlewareInterface;
 use EventIO\InterOp\EventInterface;
 use EventIO\InterOp\ListenerInterface;
+use Generator;
 use Traversable;
 
 /**
@@ -82,14 +84,67 @@ final class Acceptor implements AcceptorInterface
         $listener,
         $priority = self::PRIORITY_NORMAL
     ) {
-        $mappedListener = $this->middleware->listenerAdd(
+        return $this->addListeners($eventName, [$listener], $priority);
+    }
+
+    /**
+     * @param $eventName
+     * @param iterable $listeners
+     * @param int $priority
+     * @return Acceptor
+     */
+    public function addListeners(
+        $eventName,
+        iterable $listeners,
+        $priority = self::PRIORITY_NORMAL
+    ): Acceptor
+    {
+        $mappedListeners = $this->mapListeners(
+            $eventName,
+            $listeners,
+            $priority
+        );
+
+        $this->mappedListeners->addListeners($mappedListeners);
+
+        return $this;
+    }
+
+    /**
+     * @param $eventName
+     * @param iterable $listeners
+     * @param int $priority
+     * @return Generator
+     */
+    private function mapListeners(
+        $eventName,
+        iterable $listeners,
+        $priority = self::PRIORITY_NORMAL
+    ): Generator {
+        foreach ($listeners as $listener) {
+            yield $this->mapListener(
+                $eventName,
+                $listener,
+                $priority
+            );
+        }
+    }
+
+    /**
+     * @param $eventName
+     * @param $listener
+     * @param int $priority
+     * @return MappedListenerInterface
+     */
+    private function mapListener(
+        $eventName,
+        $listener,
+        $priority = self::PRIORITY_NORMAL
+    ): MappedListenerInterface {
+        return $this->middleware->listenerAdd(
             $eventName,
             $listener,
             $priority
         );
-
-        $this->mappedListeners->add($mappedListener);
-
-        return $this;
     }
 }

@@ -1,0 +1,8 @@
+---
+metrics:
+  emitter.emit:
+    label: "Emitter:emit() calls"
+    matching_calls:
+      php:
+        - callee: '=\Bounce\Bounce\Emitter::emit'
+...

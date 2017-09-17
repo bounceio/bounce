@@ -28,4 +28,6 @@ interface MappedListenerCollectionInterface
      * @return mixed
      */
     public function listenersFor(EventInterface $event): Traversable;
+
+    public function addListeners(iterable $mappedListeners);
 }

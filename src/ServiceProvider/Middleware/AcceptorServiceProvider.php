@@ -20,6 +20,12 @@ use Pimple\ServiceProviderInterface;
  */
 class AcceptorServiceProvider implements ServiceProviderInterface
 {
+    const MIDDLEWARE                           = 'bounce.middleware.acceptor';
+    const MIDDLEWARE_CONTAINER                 = self::MIDDLEWARE.'.container_middleware';
+    const MIDDLEWARE_CONTAINER_SERVICE_LOCATOR = self::MIDDLEWARE_CONTAINER.'.service_locator';
+    const MIDDLEWARE_PLUGINS                   = self::MIDDLEWARE.'.plugins';
+    const MIDDLEWARE_PLUGINS_CARTOGRAPHY       = self::MIDDLEWARE_PLUGINS.'.cartography';
+    const MIDDLEWARE_PLUGINS_LISTENER_MAPPER   = self::MIDDLEWARE_PLUGINS.'.listener_mapper';
 
     /**
      * Registers services on the given container.
@@ -31,34 +37,34 @@ class AcceptorServiceProvider implements ServiceProviderInterface
      */
     public function register(Container $pimple)
     {
-        $pimple['bounce.middleware.acceptor.plugins.cartography'] = function() {
+        $pimple[self::MIDDLEWARE_PLUGINS_CARTOGRAPHY] = function() {
             return Cartography::create();
         };
 
-        $pimple['bounce.middleware.acceptor.plugins.listener_mapper'] = function() {
+        $pimple[self::MIDDLEWARE_PLUGINS_LISTENER_MAPPER] = function() {
             return new ListenerMapper();
         };
 
-        $pimple['bounce.middleware.acceptor.plugins'] = function(Container $con) {
-            yield $con['bounce.middleware.acceptor.plugins.cartography'];
-            yield $con['bounce.middleware.acceptor.plugins.listener_mapper'];
+        $pimple[self::MIDDLEWARE_PLUGINS] = function(Container $con) {
+            yield $con[self::MIDDLEWARE_PLUGINS_CARTOGRAPHY];
+            yield $con[self::MIDDLEWARE_PLUGINS_LISTENER_MAPPER];
         };
 
-        $pimple['bounce.middleware.acceptor.container_middleware.service_locator'] = function(Container $con) {
+        $pimple[self::MIDDLEWARE_CONTAINER_SERVICE_LOCATOR] = function(Container $con) {
             return new ServiceLocator(
                 $con,
-                ['bounce.middleware.acceptor.plugins']
+                [self::MIDDLEWARE_PLUGINS]
             );
         };
 
-        $pimple['bounce.middleware.acceptor.container_middleware'] = function(Container $con) {
+        $pimple[self::MIDDLEWARE_CONTAINER] = function(Container $con) {
             return new ContainerMiddleware(
-                $con['bounce.middleware.acceptor.container_middleware.service_locator']
+                $con[self::MIDDLEWARE_CONTAINER_SERVICE_LOCATOR]
             );
         };
 
-        $pimple['bounce.middleware.acceptor'] = function(Container $con) {
-            return $con['bounce.middleware.acceptor.container_middleware'];
+        $pimple[self::MIDDLEWARE] = function(Container $con) {
+            return $con[self::MIDDLEWARE_CONTAINER];
         };
     }
 }
