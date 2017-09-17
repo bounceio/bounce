@@ -11,6 +11,7 @@
     }
   ],
   "autoload": {
+    "classmap": ["src/Bounce.php"],
     "psr-4": {
       "Bounce\\Bounce\\": "src"
     }
@@ -19,6 +20,9 @@
     "psr-4": {
       "Features\\Bounce\\Bounce\\": "tests/behat/bootstrap"
     }
+  },
+  "provide": {
+    "eventbus-interop/eventbus-interop": "^0.1"
   },
   "require": {
     "php": ">= 7.1",
@@ -37,6 +41,7 @@
   },
   "prefer-stable": true,
   "config": {
+    "optimize-autoloader": true,
     "bin-dir": "bin",
     "sort-packages": true
   },

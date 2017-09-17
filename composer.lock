@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "5b6916213245ae7c3167e03a029123ff",
+    "content-hash": "310e488ea4f08cc42fc529971958bd0d",
     "packages": [
         {
             "name": "eventbus-interop/eventbus-interop",
