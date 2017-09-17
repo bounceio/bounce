@@ -25,6 +25,8 @@ class PriorityQueue implements QueueInterface
      */
     private $mappedListeners;
 
+    private $queueFilter;
+
     /**
      * PriorityQueue constructor.
      * @param iterable $mappedListeners
@@ -32,6 +34,7 @@ class PriorityQueue implements QueueInterface
     public function __construct(iterable $mappedListeners = [])
     {
         $this->mappedListeners = new Map();
+        $this->queueFilter = new QueuePriorityFilter();
         $this->queueListeners($mappedListeners);
     }
 
@@ -104,13 +107,9 @@ class PriorityQueue implements QueueInterface
      */
     private function enqueueMappedListeners($priority): Generator
     {
-        $filter = function(
-            MappedListenerInterface $mappedListener) use ($priority) {
-            return $mappedListener->priority() === $priority;
-        };
-        $set = new Set();
-
-        $mappedListeners = $this->mappedListeners->filter($filter);
+        $mappedListeners = $this->mappedListeners->filter(
+            $this->queueFilter->filter($priority)
+        );
 
         yield from $mappedListeners->keys();
 

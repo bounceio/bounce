@@ -7,6 +7,7 @@
 
 namespace Bounce\Bounce\MappedListener\Collection;
 
+use Bounce\Bounce\MappedListener\Filter\EventListeners;
 use Bounce\Bounce\MappedListener\MappedListenerInterface;
 use Bounce\Bounce\MappedListener\Queue\PriorityQueue;
 use Ds\Map;
@@ -28,6 +29,8 @@ class MappedListeners implements MappedListenerCollectionInterface
 
     private $queues;
 
+    private $filter;
+
     /**
      * @param MappedListenerInterface[] ...$mappedListeners
      * @return MappedListeners
@@ -44,7 +47,7 @@ class MappedListeners implements MappedListenerCollectionInterface
     private function __construct(iterable $mappedListeners = [])
     {
         $this->mappedListeners = new Set();
-
+        $this->filter = new EventListeners();
         $this->queues = new Map();
 
         foreach ($mappedListeners as $mappedListener) {
@@ -70,6 +73,9 @@ class MappedListeners implements MappedListenerCollectionInterface
         $mappedListeners       = new Set($mappedListeners);
         $this->mappedListeners = $this->mappedListeners->union($mappedListeners);
 
+        // reset the cache od previous queues;
+        $this->queues->clear();
+
         return $this;
     }
 
@@ -78,9 +84,7 @@ class MappedListeners implements MappedListenerCollectionInterface
      */
     public function listenersFor(EventInterface $event): Traversable
     {
-        $queue = $this->queueFor($event);
-
-        yield from $queue->listeners();
+        yield from $this->queueFor($event)->listeners();
     }
 
     /**
@@ -90,21 +94,15 @@ class MappedListeners implements MappedListenerCollectionInterface
      */
     private function queueFor(EventInterface $event): PriorityQueue
     {
-        $queue = new PriorityQueue();
-
-        $mappedListeners = $this->mappedListenersFor($event);
-
-        return $queue->queueListeners($mappedListeners);
+        return new PriorityQueue($this->mappedListenersFor($event));
     }
 
     private function mappedListenersFor(EventInterface $event)
     {
         if (!$this->queues->hasKey($event)) {
-            $filter = function(MappedListenerInterface $mappedListener) use ($event) {
-                return $mappedListener->matches($event);
-            };
-
-            $mappedListeners = $this->mappedListeners->filter($filter);
+            $mappedListeners = $this->mappedListeners->filter(
+                $this->filter->filter($event)
+            );
 
             $this->queues->put($event, $mappedListeners);
         }

@@ -13,6 +13,9 @@ use Pimple\Container;
 
 require_once __DIR__.'/../vendor/autoload.php';
 
+define('NUMBER_EVENTS', 1000);
+define('NUMBER_LISTENERS', 2000);
+
 $container = new Pimple\Container();
 
 $container['named_event'] = function() {
@@ -32,8 +35,6 @@ $container[ContainerMiddleware::QUEUE_PLUGINS] = function($con) {
     yield $con['callable_listeners'];
 };
 
-
-
 $container['dispatcher_middleware'] = function($con) {
     $serviceLocator = new \Pimple\Psr11\ServiceLocator(
         $con,
@@ -45,9 +46,19 @@ $container['dispatcher_middleware'] = function($con) {
     );
 };
 
-$eventName = 'foo';
+$eventNames = ['foo', 'bar', 'baz', 'bal', 'bom'];
+$events = [];
 
-$map = new Bounce\Bounce\Map\Name($eventName);
+foreach ($eventNames as $eventName) {
+  $events[] = Named::create($eventName);
+}
+
+$maps = [];
+
+foreach ($eventNames as $eventName) {
+  $maps[] = new Bounce\Bounce\Map\Name($eventName);
+}
+$eventCount = count($events);
 
 $mappedListeners = $container['mapped_listeners'];
 
@@ -62,37 +73,32 @@ $priorities = [
 $counter        = new stdClass();
 $counter->count = 0;
 
-$listeners = function($map, $priorities) use($counter) {
-    for ($i=0; $i<10; $i++) {
-        foreach(['foo', 'bar', 'baz'] as $str) {
-            $priority = array_rand($priorities);
+$listeners = function($maps, $priorities, $eventNames) use($counter, $eventCount) {
+    for ($i=0; $i<NUMBER_LISTENERS; $i++) {
+        $eventName = $eventNames[$i % $eventCount];
+        $priority  = $priorities[array_rand($priorities)];
 
-            $listener = function(EventInterface $event)
-            use($str, $priority, $counter) {
-                $count = $counter->count;
-                echo "$count: $priority : $str\n";
-                $counter->count++;
-            };
+        $listener = function(EventInterface $event)
+        use($eventName, $i, $priority, $counter) {
+            $count = $counter->count;
+            echo "$count: $priority : $eventName:$i\n";
+            $counter->count++;
+        };
 
-            yield MappedListener::create(
-                $map,
-                $listener,
-                $priority
-            );
-        }
+        yield MappedListener::create(
+            $maps[array_rand($maps)],
+            $listener,
+            $priority
+        );
     }
 };
 
-$mappedListeners->addListeners($listeners($map, $priorities));
+$mappedListeners->addListeners($listeners($maps, $priorities, $eventNames));
 
-$event                = Named::create($eventName);
 $dispatcherMiddleware = $container['dispatcher_middleware'];
 
-//$dispatcher = Dispatcher::create(
-//    $container['dispatcher_middleware']
-//);
-
-for ($i=0; $i<10; $i++) {
+for ($i=0; $i<NUMBER_EVENTS; $i++) {
+    $event          = $events[$i % $eventCount];
     $dto            = new stdClass();
     $dto->event     = $event;
     $dto->listeners = $mappedListeners->listenersFor($event);
