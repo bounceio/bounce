@@ -8,10 +8,8 @@
 namespace Bounce\Bounce\MappedListener\Queue;
 
 use Bounce\Bounce\MappedListener\MappedListenerInterface;
-use Ds\Map;
 use Ds\PriorityQueue as DsPriorityQueue;
 use Ds\Set;
-use Generator;
 use Traversable;
 
 /**
@@ -21,11 +19,9 @@ use Traversable;
 class PriorityQueue implements QueueInterface
 {
     /**
-     * @var \Ds\Map
+     * @var \Ds\PriorityQueue
      */
-    private $mappedListeners;
-
-    private $queueFilter;
+    private $prioritizedQueue;
 
     /**
      * PriorityQueue constructor.
@@ -33,9 +29,14 @@ class PriorityQueue implements QueueInterface
      */
     public function __construct(iterable $mappedListeners = [])
     {
-        $this->mappedListeners = new Map();
-        $this->queueFilter = new QueuePriorityFilter();
+        $this->prioritizedQueue = new DsPriorityQueue();
+
         $this->queueListeners($mappedListeners);
+    }
+
+    public function flush()
+    {
+        $this->prioritizedQueue->clear();
     }
 
     /**
@@ -47,6 +48,10 @@ class PriorityQueue implements QueueInterface
         return $this->queueListeners($mappedListeners);
     }
 
+    /**
+     * @param iterable $mappedListeners
+     * @return $this
+     */
     public function queueListeners(iterable $mappedListeners)
     {
         $mappedListeners = new Set($mappedListeners);
@@ -63,56 +68,9 @@ class PriorityQueue implements QueueInterface
      */
     public function listeners(): Traversable
     {
-        $prioritizedQueue = $this->prioritizedQueue();
-
-        while (!$prioritizedQueue->isEmpty()) {
-            yield from $this->releaseQueuedListeners(
-                $prioritizedQueue->pop()
-            );
+        while (!$this->prioritizedQueue->isEmpty()) {
+            yield $this->prioritizedQueue->pop()->listener();
         }
-    }
-
-    /**
-     * @param iterable $listeners
-     *
-     * @return \Generator
-     */
-    private function releaseQueuedListeners(iterable $listeners): Generator {
-        foreach($listeners as $listener) {
-            yield $listener->listener();
-        }
-    }
-
-    /**
-     * @return DsPriorityQueue
-     */
-    private function prioritizedQueue(): DsPriorityQueue
-    {
-        $prioritizedQueue = new DsPriorityQueue();
-        $priorities       = new Set($this->mappedListeners->values());
-        foreach ($priorities as $priority) {
-            $prioritizedQueue->push(
-                $this->enqueueMappedListeners($priority),
-                $priority
-            );
-        }
-
-        return $prioritizedQueue;
-    }
-
-    /**
-     * @param $priority
-     *
-     * @return \Generator
-     */
-    private function enqueueMappedListeners($priority): Generator
-    {
-        $mappedListeners = $this->mappedListeners->filter(
-            $this->queueFilter->filter($priority)
-        );
-
-        yield from $mappedListeners->keys();
-
     }
 
     /**
@@ -120,7 +78,7 @@ class PriorityQueue implements QueueInterface
      */
     private function addListener(MappedListenerInterface $mappedListener)
     {
-        $this->mappedListeners->put(
+        $this->prioritizedQueue->push(
             $mappedListener,
             $mappedListener->priority()
         );
