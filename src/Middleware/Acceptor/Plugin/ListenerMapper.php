@@ -22,13 +22,13 @@ class ListenerMapper implements AcceptorPluginInterface
      *
      * @return mixed
      */
-    public function __invoke($parts, callable $next)
+    public function __invoke($parts, callable $next): MappedListenerInterface
     {
         $parts = $next($parts);
         if (!$parts instanceof MappedListenerInterface) {
             $parts = MappedListener::fromDto($parts);
         }
 
-        return $next($parts);
+        return $parts;
     }
 }

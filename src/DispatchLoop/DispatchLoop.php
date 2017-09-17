@@ -33,7 +33,8 @@ class DispatchLoop
      */
     public static function fromDto($dto): self
     {
-        return new self($dto->event, $dto->listeners);
+        $acceptor = $dto->acceptor;
+        return new self($dto->event, $acceptor);
     }
 
     /**
@@ -42,7 +43,7 @@ class DispatchLoop
      * @param EventInterface $event
      * @param iterable       $listeners
      */
-    public function __construct(EventInterface $event, iterable $listeners)
+    public function __construct(EventInterface $event, callable $listeners)
     {
         $this->event     = $event;
         $this->listeners = $listeners;
@@ -89,7 +90,8 @@ class DispatchLoop
      */
     private function listeners(): Generator
     {
-        yield from $this->listeners;
+        $listeners = $this->listeners;
+        yield from $listeners($this->event);
     }
 
     /**

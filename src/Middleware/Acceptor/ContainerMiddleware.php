@@ -7,10 +7,10 @@
 namespace Bounce\Bounce\Middleware\Acceptor;
 
 use Bounce\Bounce\MappedListener\MappedListenerInterface;
-use EventIO\InterOp\EventInterface;
+use Ds\Stack;
+use Generator;
 use Psr\Container\ContainerInterface;
 use stdClass;
-use Traversable;
 
 class ContainerMiddleware implements AcceptorMiddlewareInterface
 {
@@ -55,11 +55,9 @@ class ContainerMiddleware implements AcceptorMiddlewareInterface
                 return $parts;
             };
 
-            $plugins = $this->container->get(self::LISTENER_PLUGINS);
-
-            while ($plugin = array_pop($plugins)) {
-                $lastCallable = function ($dto) use ($plugin, $lastCallable) {
-                    return $plugin($dto, $lastCallable);
+            foreach ($this->pluginStack() as $plugin) {
+                $lastCallable = function ($eventDispatchLoop) use ($plugin, $lastCallable) {
+                    return $plugin($eventDispatchLoop, $lastCallable);
                 };
             }
 
@@ -67,6 +65,28 @@ class ContainerMiddleware implements AcceptorMiddlewareInterface
         }
 
         return $this->executionChain;
+    }
+
+    private function pluginStack(): Generator
+    {
+        $plugins = $this->plugins();
+
+        while (!$plugins->isEmpty()) {
+            yield $plugins->pop();
+        }
+    }
+
+    /**
+     * @return \Ds\Stack
+     */
+    private function plugins(): Stack
+    {
+        $stack = new Stack();
+        foreach ($this->container->get(self::LISTENER_PLUGINS) as $plugin) {
+            $stack->push($plugin);
+        }
+
+        return $stack;
     }
 
     /**

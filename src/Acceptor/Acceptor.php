@@ -55,6 +55,11 @@ final class Acceptor implements AcceptorInterface
         $this->mappedListeners  = $mappedListeners;
     }
 
+    public function __invoke(EventInterface $event)
+    {
+        return $this->listenersFor($event);
+    }
+
     /**
      * @param EventInterface $event
      *

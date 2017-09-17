@@ -81,7 +81,8 @@ $listeners = function($maps, $priorities, $eventNames) use($counter, $eventCount
         $listener = function(EventInterface $event)
         use($eventName, $i, $priority, $counter) {
             $count = $counter->count;
-            echo "$count: $priority : $eventName:$i\n";
+            $msg = "%d : %d : %s : %d\n";
+            echo sprintf($msg, $count, $priority, $event->name(), $i);
             $counter->count++;
         };
 

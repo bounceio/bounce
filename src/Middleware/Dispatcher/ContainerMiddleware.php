@@ -7,6 +7,7 @@
 
 namespace Bounce\Bounce\Middleware\Dispatcher;
 
+use Bounce\Bounce\DispatchLoop\DispatchLoop;
 use Ds\Stack;
 use Generator;
 use Psr\Container\ContainerInterface;
@@ -54,6 +55,10 @@ class ContainerMiddleware implements DispatcherMiddlewareInterface
     {
         if (!$this->executionChain) {
             $lastCallable = function ($dispatchLoop) {
+                if (!$dispatchLoop instanceof DispatchLoop) {
+                    $dispatchLoop = DispatchLoop::fromDto($dispatchLoop);
+                }
+
                 return $dispatchLoop;
             };
 

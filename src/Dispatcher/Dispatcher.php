@@ -73,7 +73,7 @@ final class Dispatcher implements DispatcherInterface
      */
     public function enqueue(...$events): DispatcherInterface
     {
-        $this->queue->queueEvents($events);
+        $this->queueEvents($events);
 
         return $this;
     }
@@ -101,7 +101,7 @@ final class Dispatcher implements DispatcherInterface
         iterable $events = []
     ): DispatcherInterface  {
 
-        $this->enqueue($events);
+        $this->queueEvents($events);
 
         if (!$this->isDispatching()) {
             $this->dispatchQueue($acceptor);
@@ -132,6 +132,11 @@ final class Dispatcher implements DispatcherInterface
         $this->currentLoop->dispatch();
     }
 
+    private function queueEvents(iterable $events)
+    {
+        $this->queue->queueEvents($events);
+    }
+
     /**
      * @param $event
      * @param $acceptor
@@ -142,8 +147,8 @@ final class Dispatcher implements DispatcherInterface
     {
         $dispatchLoop               = new stdClass();
         $dispatchLoop->event        = $event;
-        $dispatchLoop->listeners    = $acceptor->listenersFor($event);
+        $dispatchLoop->acceptor     = $acceptor;
 
-        return DispatchLoop::fromDto($this->middleware->dispatch($dispatchLoop));
+        return $this->middleware->dispatch($dispatchLoop);
     }
 }

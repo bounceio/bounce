@@ -43,24 +43,29 @@ class CallableListeners
         $eventDispatchLoop,
         callable $next
     ) {
-        $eventDispatchLoop->listeners = $this->callables($eventDispatchLoop->listeners);
+        $eventDispatchLoop->acceptor = $this->callables($eventDispatchLoop->acceptor);
         return $next($eventDispatchLoop);
     }
 
     /**
-     * @param iterable $listeners
-     *
+     * @param callable $acceptor
      * @return Generator
+     * @internal param iterable $listeners
+     *
      */
-    public function callables(iterable $listeners): Generator
+    public function callables(callable $acceptor)
     {
-        foreach ($listeners as $listener) {
-            if (is_callable($listener)) {
-                $listener = $this->callableFromListener($listener);
-            }
+        $acceptor = function($event) use ($acceptor) {
+            foreach ($acceptor($event) as $listener) {
+                if (is_callable($listener)) {
+                    $listener = $this->callableFromListener($listener);
+                }
 
-            yield $listener;
-        }
+                yield $listener;
+            }
+        };
+
+        return $acceptor;
     }
 
     /**

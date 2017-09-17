@@ -7,6 +7,7 @@
 
 namespace Bounce\Bounce\Cartographer;
 
+use Bounce\Bounce\Map\Glob;
 use Bounce\Bounce\Map\MapInterface;
 
 class Cartographer implements CartographerInterface
@@ -18,6 +19,6 @@ class Cartographer implements CartographerInterface
      */
     public function map(string $type, ...$eventMap): MapInterface
     {
-        // TODO: Implement map() method.
+        return Glob::fromIterable($eventMap);
     }
 }
