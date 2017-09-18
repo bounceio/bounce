@@ -10,6 +10,8 @@ namespace Bounce\Bounce\ServiceProvider;
 use Bounce\Bounce\Acceptor\Acceptor;
 use Bounce\Bounce\Dispatcher\Dispatcher;
 use Bounce\Bounce\Emitter;
+use Bounce\Bounce\MappedListener\Filter\EventListeners;
+use Bounce\Bounce\MappedListener\Queue\PriorityQueue;
 use Bounce\Bounce\MappedListener\Collection\MappedListeners;
 use Bounce\Bounce\Middleware\Acceptor\AcceptorMiddleware;
 use Bounce\Bounce\Middleware\Emitter\ContainerMiddleware;
@@ -42,8 +44,19 @@ class Bounce implements ServiceProviderInterface
      */
     public function register(Container $pimple)
     {
-        $pimple[self::MAPPED_LISTENER_COLLECTION] = function () {
-            return MappedListeners::create();
+        $pimple['bounce.listener.filter'] = function() {
+            return new EventListeners();
+        };
+
+        $pimple['bounce.listener.queue'] = function() {
+            return new PriorityQueue();
+        };
+
+        $pimple[self::MAPPED_LISTENER_COLLECTION] = function (Container $con) {
+            return MappedListeners::create(
+                $con['bounce.listener.queue'],
+                $con['bounce.listener.filter']
+            );
         };
 
         $pimple[self::ACCEPTOR_MIDDLEWARE] = function(Container $con) {

@@ -9,7 +9,7 @@ namespace Bounce\Bounce\MappedListener\Collection;
 
 use Bounce\Bounce\MappedListener\Filter\EventListeners;
 use Bounce\Bounce\MappedListener\MappedListenerInterface;
-use Bounce\Bounce\MappedListener\Queue\PriorityQueue;
+use Bounce\Bounce\MappedListener\Queue\QueueInterface;
 use Ds\Map;
 use EventIO\InterOp\EventInterface;
 use Ds\Set;
@@ -27,35 +27,27 @@ class MappedListeners implements MappedListenerCollectionInterface
      */
     private $mappedListeners;
 
-    private $priorityQueue;
-
-    private $queues;
+    private $queue;
 
     private $filter;
 
     /**
-     * @param MappedListenerInterface[] ...$mappedListeners
      * @return MappedListeners
      */
-    public static function create(MappedListenerInterface ...$mappedListeners): self
+    public static function create(QueueInterface $queue, $filter): self
     {
-        return new self($mappedListeners);
+        return new self($queue, $filter);
     }
 
     /**
      * MappedListeners constructor.
      * @param iterable $mappedListeners
      */
-    private function __construct(iterable $mappedListeners = [])
+    private function __construct(QueueInterface $queue, $filter)
     {
         $this->mappedListeners = new Set();
-        $this->filter          = new EventListeners();
-        $this->priorityQueue   = new PriorityQueue();
-        $this->queues          = new Map();
-
-        foreach ($mappedListeners as $mappedListener) {
-            $this->add($mappedListener);
-        }
+        $this->filter          = $filter;
+        $this->queue   = $queue;
     }
 
     /**
@@ -77,9 +69,6 @@ class MappedListeners implements MappedListenerCollectionInterface
             $this->mappedListeners->add($mappedListener);
         }
 
-        // reset the cache of previous queues;
-        $this->queues->clear();
-
         return $this;
     }
 
@@ -96,23 +85,14 @@ class MappedListeners implements MappedListenerCollectionInterface
      *
      * @return \Bounce\Bounce\MappedListener\Queue\PriorityQueue
      */
-    private function queueFor(EventInterface $event): PriorityQueue
+    private function queueFor(EventInterface $event): QueueInterface
     {
-        $this->priorityQueue->flush();
-        $this->priorityQueue->queueListeners($this->queuedListenersFor($event));
-
-        return $this->priorityQueue;
-    }
-
-    /**
-     * @param EventInterface $event
-     * @return Set
-     */
-    private function mappedListenersFor(EventInterface $event)
-    {
-        return $this->mappedListeners->filter(
-            $this->filter->filter($event)
+        $this->queue->flush();
+        $this->queue->queueListeners(
+          $this->queuedListenersFor($event)
         );
+
+        return $this->queue;
     }
 
     /**
@@ -121,11 +101,9 @@ class MappedListeners implements MappedListenerCollectionInterface
      */
     private function queuedListenersFor(EventInterface $event)
     {
-        if (!$this->queues->hasKey($event)) {
-            $this->queues->put($event, $this->mappedListenersFor($event));
-        }
-
-        return $this->queues->get($event);
+        yield from $this->mappedListeners->filter(
+            $this->filter->filter($event)
+        );
     }
 
 

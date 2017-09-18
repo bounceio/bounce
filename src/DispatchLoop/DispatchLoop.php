@@ -75,7 +75,7 @@ class DispatchLoop
      */
     private function dispatchEventToListeners()
     {
-        $listeners          = $this->listeners();
+        $listeners = $this->listeners();
 
         while ($this->continueDispatching($listeners)) {
             $listener = $listeners->current();

@@ -5,7 +5,7 @@ use EventIO\InterOp\EventInterface;
 
 require_once __DIR__.'/../vendor/autoload.php';
 
-define('NUMBER_EVENTS', 1000);
+define('NUMBER_EVENTS', 10000);
 define('NUMBER_LISTENERS', 1000);
 
 $counter = new StdClass;
@@ -31,5 +31,3 @@ $eventRounds = ceil(NUMBER_EVENTS / count($events));
 for ($i=0; $i<$eventRounds; $i++) {
     $emitter->emitBatch($events);
 }
-
-
