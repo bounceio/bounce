@@ -7,15 +7,14 @@
 namespace Bounce\Bounce\Middleware\Acceptor;
 
 use Bounce\Emitter\MappedListener\MappedListenerInterface;
-use Bounce\Emitter\Middleware\AcceptorMiddlewareInterface;
 use Ds\Stack;
 use Generator;
 use Psr\Container\ContainerInterface;
 use stdClass;
 
-class ContainerMiddleware implements AcceptorMiddlewareInterface
+class ContainerMiddleware
 {
-    const LISTENER_PLUGINS = 'bounce.middleware.acceptor.plugins';
+    const ACCEPTOR_PLUGINS = 'bounce.middleware.acceptor.plugins';
 
     /**
      * @var ContainerInterface
@@ -39,7 +38,7 @@ class ContainerMiddleware implements AcceptorMiddlewareInterface
     /**
      * {@inheritdoc}
      */
-    public function listenerAdd($map, $listener, $priority): MappedListenerInterface
+    public function __invoke($map, $listener, $priority): MappedListenerInterface
     {
         $stack = $this->executionChain();
 
@@ -83,7 +82,7 @@ class ContainerMiddleware implements AcceptorMiddlewareInterface
     private function plugins(): Stack
     {
         $stack = new Stack();
-        foreach ($this->container->get(self::LISTENER_PLUGINS) as $plugin) {
+        foreach ($this->container->get(self::ACCEPTOR_PLUGINS) as $plugin) {
             $stack->push($plugin);
         }
 

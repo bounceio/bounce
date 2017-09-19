@@ -2,10 +2,10 @@
 
 namespace spec\Bounce\Bounce\Middleware\Emitter\Plugin;
 
-use Bounce\Bounce\Event\Named;
-use Bounce\Bounce\Middleware\Emitter\Plugin\EmitterPluginInterface;
+use Bounce\Emitter\Event\Named;
+
 use PhpSpec\ObjectBehavior;
-use Prophecy\Argument;
+use stdClass;
 
 class NamedEventSpec extends ObjectBehavior
 {
@@ -18,14 +18,11 @@ class NamedEventSpec extends ObjectBehavior
         ];
     }
 
-    function it_is_an_emitter_plugin()
-    {
-        $this->shouldHaveType(EmitterPluginInterface::class);
-    }
-
     function it_creates_a_named_event_from_a_string()
     {
-        $eventName = 'simple.event';
+        $dto        = new stdClass();
+        $eventName  = 'simple.event';
+        $dto->event = $eventName;
 
         $next = function(Named $named) {
             return $named;

@@ -23,7 +23,6 @@ class DispatcherServiceProvider implements ServiceProviderInterface
     const MIDDLEWARE                            = 'bounce.middleware.dispatcher';
     const MIDDLEWARE_CONTAINER                  = self::MIDDLEWARE.'.container_middleware';
     const MIDDLEWARE_CONTAINER_SERVICE_LOCATOR  = self::MIDDLEWARE_CONTAINER.'.service_locator';
-    const MIDDLEWARE_PLUGINS                    = self::MIDDLEWARE.'.plugins';
     const MIDDLEWARE_PLUGINS_CALLABLE_LISTENERS = self::MIDDLEWARE_PLUGINS.'.callable_listeners';
     const MIDDLEWARE_PLUGINS_NAMED_EVENT        = self::MIDDLEWARE_PLUGINS.'.named_event';
 
@@ -45,7 +44,7 @@ class DispatcherServiceProvider implements ServiceProviderInterface
             return new CallableListeners();
         };
 
-        $pimple[self::MIDDLEWARE_PLUGINS] = function(Container $con) {
+        $pimple[ContainerMiddleware::DISPATCHER_PLUGINS] = function(Container $con) {
             yield $con[self::MIDDLEWARE_PLUGINS_NAMED_EVENT];
             yield $con[self::MIDDLEWARE_PLUGINS_CALLABLE_LISTENERS];
         };
@@ -53,7 +52,7 @@ class DispatcherServiceProvider implements ServiceProviderInterface
         $pimple[self::MIDDLEWARE_CONTAINER_SERVICE_LOCATOR] = function(Container $con) {
             return new ServiceLocator(
                 $con,
-                [self::MIDDLEWARE_PLUGINS]
+                [ContainerMiddleware::DISPATCHER_PLUGINS]
             );
         };
 

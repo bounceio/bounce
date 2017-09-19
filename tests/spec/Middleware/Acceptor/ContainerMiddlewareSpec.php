@@ -2,12 +2,11 @@
 
 namespace spec\Bounce\Bounce\Middleware\Acceptor;
 
-use Bounce\Bounce\Acceptor\Acceptor;
-use Bounce\Bounce\MappedListener\MappedListenerInterface;
-use Bounce\Bounce\Middleware\Acceptor\AcceptorMiddlewareInterface;
 use Bounce\Bounce\Middleware\Acceptor\ContainerMiddleware;
 use Bounce\Bounce\Middleware\Acceptor\Plugin\AcceptorPluginInterface;
-use Bounce\Bounce\Middleware\Acceptor\Plugin\Cartography;
+use Bounce\Emitter\Acceptor\Acceptor;
+use Bounce\Emitter\MappedListener\MappedListenerInterface;
+use Bounce\Emitter\Middleware\AcceptorMiddlewareInterface;
 use EventIO\InterOp\ListenerInterface;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
@@ -23,11 +22,6 @@ class ContainerMiddlewareSpec extends ObjectBehavior
         $this->beConstructedWith($locator);
     }
 
-    function it_is_acceptor_middleware()
-    {
-        $this->shouldHaveType(AcceptorMiddlewareInterface::class);
-    }
-
     function it_executes_middleware_plugins_for_a_listener_being_added(
         ContainerInterface $locator,
         AcceptorPluginInterface $plugin,
@@ -41,7 +35,7 @@ class ContainerMiddlewareSpec extends ObjectBehavior
             Argument::type('callable')
         )->willReturn($mappedListener);
 
-        $this->listenerAdd($map, $listener, Acceptor::PRIORITY_NORMAL)
+        $this->__invoke($map, $listener, Acceptor::PRIORITY_NORMAL)
             ->shouldReturn($mappedListener);
     }
 }

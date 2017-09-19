@@ -2,10 +2,10 @@
 
 namespace spec\Bounce\Bounce\Middleware\Acceptor\Plugin;
 
-use Bounce\Bounce\Acceptor\Acceptor;
-use Bounce\Bounce\Map\Glob;
-use Bounce\Bounce\MappedListener\MappedListenerInterface;
 use Bounce\Bounce\Middleware\Acceptor\Plugin\AcceptorPluginInterface;
+use Bounce\Cartographer\Map\Glob;
+use Bounce\Emitter\Acceptor\Acceptor;
+use Bounce\Emitter\MappedListener\MappedListenerInterface;
 use PhpSpec\ObjectBehavior;
 use stdClass;
 

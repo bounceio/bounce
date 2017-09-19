@@ -1,12 +1,10 @@
 <?php
 
-namespace spec\Bounce\Bounce\Middleware\Emitter;
+namespace spec\Bounce\Bounce\Middleware\Dispatcher;
 
-use Bounce\Bounce\Event\Named;
-use Bounce\Bounce\Middleware\Emitter\ContainerMiddleware;
-use Bounce\Bounce\Middleware\Emitter\EmitterMiddlewareInterface;
-use Bounce\Bounce\Middleware\Emitter\Plugin\EmitterPluginInterface;
-use Bounce\Bounce\Middleware\Emitter\Plugin\NamedEvent;
+use Bounce\Bounce\Middleware\Dispatcher\ContainerMiddleware;
+use Bounce\Bounce\Middleware\Dispatcher\Plugin\NamedEvent;
+use Bounce\Emitter\Event\Named;
 use EventIO\InterOp\EventInterface;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
@@ -28,20 +26,15 @@ class ContainerMiddlewareSpec extends ObjectBehavior
         $this->beConstructedWith($locator);
     }
 
-    function it_is_emitter_middleware()
-    {
-        $this->shouldHaveType(EmitterMiddlewareInterface::class);
-    }
-
     function it_executes_middleware_plugins_for_an_event(
         ContainerInterface $locator,
-        EmitterPluginInterface $namedEvent,
+        NamedEvent $namedEvent,
         EventInterface $named
     ) {
         $eventName = 'foo.bar';
-        $locator->get(ContainerMiddleware::QUEUE_PLUGINS)->willReturn([$namedEvent]);
+        $locator->get(ContainerMiddleware::DISPATCHER_PLUGINS)->willReturn([$namedEvent]);
         $namedEvent->__invoke($eventName, Argument::type('callable'))->willReturn($named);
-        $this->queue($eventName)->shouldReturn($named);
+        $this->__invoke($eventName)->shouldReturn($named);
     }
 
     function it_executes_a_stack_of_middleware_in_order(
@@ -51,13 +44,13 @@ class ContainerMiddlewareSpec extends ObjectBehavior
 
         $first = new NamedEvent();
 
-        $second = function(Named $named, $next) {
+        $second = function(Named $named, callable $next) {
             $named->count = 2;
 
             return $next($named);
         };
 
-        $third = function(Named $named, $next) {
+        $third = function(Named $named, callable $next) {
             if ($named->count == 2) {
                 $named->count = 5;
             }
@@ -66,8 +59,8 @@ class ContainerMiddlewareSpec extends ObjectBehavior
         };
 
 
-        $locator->get(ContainerMiddleware::QUEUE_PLUGINS)->willReturn([$first, $second, $third]);
+        $locator->get(ContainerMiddleware::DISPATCHER_PLUGINS)->willReturn([$first, $second, $third]);
 
-        $this->queue($eventName)->shouldBeAValidEvent(5);
+        $this->__invoke($eventName)->shouldBeAValidEvent(5);
     }
 }
