@@ -7,7 +7,7 @@
 
 namespace Bounce\Bounce\Middleware\Dispatcher\Plugin;
 
-use Bounce\Bounce\Event\Named;
+use Bounce\Emitter\Event\Named;
 use EventIO\InterOp\EventInterface;
 
 /**

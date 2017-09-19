@@ -7,7 +7,8 @@
 
 namespace Bounce\Bounce\Middleware\Dispatcher;
 
-use Bounce\Bounce\DispatchLoop\DispatchLoop;
+use Bounce\Emitter\DispatchLoop\DispatchLoop;
+use Bounce\Emitter\Middleware\DispatcherMiddlewareInterface;
 use Ds\Stack;
 use Generator;
 use Psr\Container\ContainerInterface;

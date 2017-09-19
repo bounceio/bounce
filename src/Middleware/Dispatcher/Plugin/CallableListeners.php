@@ -7,8 +7,8 @@
 
 namespace Bounce\Bounce\Middleware\Dispatcher\Plugin;
 
-use Bounce\Bounce\Listener\CallableListener;
-use Bounce\Bounce\MappedListener\Collection\MappedListenerCollectionInterface;
+use Bounce\Emitter\Listener\CallableListener;
+use Bounce\Emitter\Collection\MappedListenerCollectionInterface;
 use Ds\Map;
 use EventIO\InterOp\ListenerInterface;
 use Generator;
@@ -31,7 +31,6 @@ class CallableListeners
     {
         $this->listenerMap = new Map();
     }
-
 
     /**
      * @param          $eventDispatchLoop

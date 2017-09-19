@@ -27,6 +27,7 @@
   "require": {
     "php": ">= 7.1",
     "bounce/cartographer": "dev-master",
+    "bounce/emitter": "dev-master",
     "eventbus-interop/eventbus-interop": "^0.1",
     "php-ds/php-ds": "^1.2",
     "pimple/pimple": "^3.2"

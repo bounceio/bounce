@@ -6,7 +6,8 @@
  */
 namespace Bounce\Bounce\Middleware\Acceptor;
 
-use Bounce\Bounce\MappedListener\MappedListenerInterface;
+use Bounce\Emitter\MappedListener\MappedListenerInterface;
+use Bounce\Emitter\Middleware\AcceptorMiddlewareInterface;
 use Ds\Stack;
 use Generator;
 use Psr\Container\ContainerInterface;

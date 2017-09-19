@@ -8,6 +8,7 @@
 namespace Bounce\Bounce\MappedListener;
 
 use Bounce\Cartographer\Map\MapInterface;
+use Bounce\Emitter\MappedListener\MappedListenerInterface;
 use EventIO\InterOp\ListenerInterface;
 use StdClass;
 

@@ -1,7 +1,7 @@
 <?php
 
 use Bounce\Bounce;
-use Bounce\Bounce\Event\Named;
+use Bounce\Emitter\Event\Named;
 use Bounce\Cartographer\Map\EventType;
 use EventIO\InterOp\EventInterface;
 use Symfony\Component\Dotenv\Dotenv;

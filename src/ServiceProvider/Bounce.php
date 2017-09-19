@@ -7,14 +7,10 @@
 
 namespace Bounce\Bounce\ServiceProvider;
 
-use Bounce\Bounce\Acceptor\Acceptor;
-use Bounce\Bounce\Dispatcher\Dispatcher;
-use Bounce\Bounce\Emitter;
 use Bounce\Bounce\MappedListener\Collection\MappedListeners;
-use Bounce\Bounce\MappedListener\Filter\EventListeners;
-use Bounce\Bounce\MappedListener\Queue\PriorityQueue;
 use Bounce\Bounce\ServiceProvider\Middleware\AcceptorServiceProvider;
 use Bounce\Bounce\ServiceProvider\Middleware\DispatcherServiceProvider;
+use Bounce\Emitter\ServiceProvider\EmitterServiceProvider;
 use Pimple\Container;
 use Pimple\ServiceProviderInterface;
 
@@ -23,13 +19,9 @@ use Pimple\ServiceProviderInterface;
  */
 class Bounce implements ServiceProviderInterface
 {
-    const EMITTER                       = 'bounce.emitter';
-    const ACCEPTOR                      = 'bounce.acceptor';
-    const ACCEPTOR_MIDDLEWARE           = self::ACCEPTOR.'.middleware';
-    const DISPATCHER                    = 'bounce.dispatcher';
-    const DISPATCHER_MIDDLEWARE         = self::DISPATCHER.'.middleware';
-
-    const MAPPED_LISTENER_COLLECTION    = 'bounce.mapped_listener_collection';
+    const EMITTER                       = EmitterServiceProvider::EMITTER;
+    const ACCEPTOR_MIDDLEWARE           = EmitterServiceProvider::ACCEPTOR_MIDDLEWARE;
+    const DISPATCHER_MIDDLEWARE         = EmitterServiceProvider::DISPATCHER_MIDDLEWARE;
 
     /**
      * Registers services on the given container.
@@ -41,20 +33,7 @@ class Bounce implements ServiceProviderInterface
      */
     public function register(Container $pimple)
     {
-        $pimple['bounce.mapped_listeners.filter'] = function() {
-            return new EventListeners();
-        };
-
-        $pimple['bounce.mapped_listeners.queue'] = function() {
-            return new PriorityQueue();
-        };
-
-        $pimple[self::MAPPED_LISTENER_COLLECTION] = function (Container $con) {
-            return MappedListeners::create(
-                $con['bounce.mapped_listeners.queue'],
-                $con['bounce.mapped_listeners.filter']
-            );
-        };
+        $pimple->register(new EmitterServiceProvider());
 
         $pimple[self::ACCEPTOR_MIDDLEWARE] = function(Container $con) {
             if (!$con->offsetExists(AcceptorServiceProvider::MIDDLEWARE)) {
@@ -70,26 +49,6 @@ class Bounce implements ServiceProviderInterface
             }
 
             return $con[DispatcherServiceProvider::MIDDLEWARE];
-        };
-
-        $pimple[self::ACCEPTOR] = function(Container $con) {
-            return Acceptor::create(
-                $con[self::ACCEPTOR_MIDDLEWARE],
-                $con[self::MAPPED_LISTENER_COLLECTION]
-            );
-        };
-
-        $pimple[self::DISPATCHER] = function(Container $con) {
-            return Dispatcher::create(
-                $con[self::DISPATCHER_MIDDLEWARE]
-            );
-        };
-
-        $pimple[self::EMITTER] = function (Container $con) {
-            return new Emitter(
-                $con[self::ACCEPTOR],
-                $con[self::DISPATCHER]
-            ) ;
         };
     }
 }

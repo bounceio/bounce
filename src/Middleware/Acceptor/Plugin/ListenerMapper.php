@@ -8,7 +8,7 @@
 namespace Bounce\Bounce\Middleware\Acceptor\Plugin;
 
 use Bounce\Bounce\MappedListener\MappedListener;
-use Bounce\Bounce\MappedListener\MappedListenerInterface;
+use Bounce\Emitter\MappedListener\MappedListenerInterface;
 use stdClass;
 
 /**
