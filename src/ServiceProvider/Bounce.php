@@ -10,15 +10,12 @@ namespace Bounce\Bounce\ServiceProvider;
 use Bounce\Bounce\Acceptor\Acceptor;
 use Bounce\Bounce\Dispatcher\Dispatcher;
 use Bounce\Bounce\Emitter;
+use Bounce\Bounce\MappedListener\Collection\MappedListeners;
 use Bounce\Bounce\MappedListener\Filter\EventListeners;
 use Bounce\Bounce\MappedListener\Queue\PriorityQueue;
-use Bounce\Bounce\MappedListener\Collection\MappedListeners;
-use Bounce\Bounce\Middleware\Acceptor\AcceptorMiddleware;
-use Bounce\Bounce\Middleware\Emitter\ContainerMiddleware;
 use Bounce\Bounce\ServiceProvider\Middleware\AcceptorServiceProvider;
 use Bounce\Bounce\ServiceProvider\Middleware\DispatcherServiceProvider;
 use Pimple\Container;
-use Pimple\Psr11\ServiceLocator;
 use Pimple\ServiceProviderInterface;
 
 /**
@@ -44,18 +41,18 @@ class Bounce implements ServiceProviderInterface
      */
     public function register(Container $pimple)
     {
-        $pimple['bounce.listener.filter'] = function() {
+        $pimple['bounce.mapped_listeners.filter'] = function() {
             return new EventListeners();
         };
 
-        $pimple['bounce.listener.queue'] = function() {
+        $pimple['bounce.mapped_listeners.queue'] = function() {
             return new PriorityQueue();
         };
 
         $pimple[self::MAPPED_LISTENER_COLLECTION] = function (Container $con) {
             return MappedListeners::create(
-                $con['bounce.listener.queue'],
-                $con['bounce.listener.filter']
+                $con['bounce.mapped_listeners.queue'],
+                $con['bounce.mapped_listeners.filter']
             );
         };
 

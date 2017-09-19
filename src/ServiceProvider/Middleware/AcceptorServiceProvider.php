@@ -10,6 +10,7 @@ namespace Bounce\Bounce\ServiceProvider\Middleware;
 use Bounce\Bounce\Middleware\Acceptor\ContainerMiddleware;
 use Bounce\Bounce\Middleware\Acceptor\Plugin\Cartography;
 use Bounce\Bounce\Middleware\Acceptor\Plugin\ListenerMapper;
+use Bounce\Cartographer\ServiceProvider\CartographerServiceProvider;
 use Pimple\Container;
 use Pimple\Psr11\ServiceLocator;
 use Pimple\ServiceProviderInterface;
@@ -37,8 +38,14 @@ class AcceptorServiceProvider implements ServiceProviderInterface
      */
     public function register(Container $pimple)
     {
-        $pimple[self::MIDDLEWARE_PLUGINS_CARTOGRAPHY] = function() {
-            return Cartography::create();
+        $pimple[self::MIDDLEWARE_PLUGINS_CARTOGRAPHY] = function(Container $con) {
+            if (!$con->offsetExists(CartographerServiceProvider::CARTOGRAPHER)) {
+                $con->register(new CartographerServiceProvider());
+            }
+
+            return new Cartography(
+                $con[CartographerServiceProvider::CARTOGRAPHER]
+            );
         };
 
         $pimple[self::MIDDLEWARE_PLUGINS_LISTENER_MAPPER] = function() {

@@ -7,7 +7,7 @@
 
 namespace Bounce\Bounce\MappedListener;
 
-use Bounce\Bounce\Map\MapInterface;
+use Bounce\Cartographer\Map\MapInterface;
 use EventIO\InterOp\ListenerInterface;
 use StdClass;
 

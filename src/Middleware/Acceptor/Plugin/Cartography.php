@@ -7,10 +7,9 @@
 
 namespace Bounce\Bounce\Middleware\Acceptor\Plugin;
 
-use Bounce\Bounce\Cartographer\Cartographer;
-use Bounce\Bounce\Cartographer\CartographerInterface;
+use Bounce\Cartographer\CartographerInterface;
+use Bounce\Cartographer\Map\MapInterface;
 use Ds\Map;
-use stdClass;
 
 /**
  * Class Cartography
@@ -18,6 +17,10 @@ use stdClass;
  */
 class Cartography implements AcceptorPluginInterface
 {
+    const MAP_GLOB          = 'glob';
+    const MAP_EVENT_TYPE    = 'event_type';
+    const MAP_NAMED         = 'named';
+
     /**
      * @var CartographerInterface
      */
@@ -29,24 +32,10 @@ class Cartography implements AcceptorPluginInterface
     private $maps;
 
     /**
-     * @param CartographerInterface|null $cartographer
-     *
-     * @return Cartography
-     */
-    public static function create(CartographerInterface $cartographer = null)
-    {
-        if (null == $cartographer) {
-            $cartographer = new Cartographer();
-        }
-
-        return new self($cartographer);
-    }
-
-    /**
      * Cartography constructor.
      * @param CartographerInterface $cartographer
      */
-    private function __construct(CartographerInterface $cartographer)
+    public function __construct(CartographerInterface $cartographer)
     {
         $this->cartographer = $cartographer;
         $this->maps         = new Map();
@@ -68,6 +57,20 @@ class Cartography implements AcceptorPluginInterface
      */
     public function chart($map)
     {
+        if (!$map instanceof MapInterface) {
+            $map = $this->fetchMap($map);
+        }
+
+        return $map;
+    }
+
+    /**
+     * @param $map
+     *
+     * @return mixed
+     */
+    private function fetchMap($map)
+    {
         if (!$this->maps->hasKey($map)) {
             $this->maps->put($map, $this->createMap($map));
         }
@@ -77,13 +80,23 @@ class Cartography implements AcceptorPluginInterface
 
     /**
      * @param $map
-     * @return \Bounce\Bounce\Map\MapInterface
+     * @return \Bounce\Cartographer\Map\MapInterface
      */
     private function createMap($map)
     {
         return $this->cartographer->map(
-            Cartographer::MAP_GLOB,
+            $this->mapType($map),
             $map
         );
+    }
+
+    /**
+     * @param $map
+     *
+     * @return string
+     */
+    private function mapType($map): string
+    {
+        return self::MAP_GLOB;
     }
 }

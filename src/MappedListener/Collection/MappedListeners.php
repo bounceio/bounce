@@ -47,7 +47,7 @@ class MappedListeners implements MappedListenerCollectionInterface
     {
         $this->mappedListeners = new Set();
         $this->filter          = $filter;
-        $this->queue   = $queue;
+        $this->queue           = $queue;
     }
 
     /**

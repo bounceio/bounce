@@ -1,12 +1,19 @@
 <?php
 
 use Bounce\Bounce;
+use Bounce\Bounce\Event\Named;
+use Bounce\Cartographer\Map\EventType;
 use EventIO\InterOp\EventInterface;
+use Symfony\Component\Dotenv\Dotenv;
+
 
 require_once __DIR__.'/../vendor/autoload.php';
 
-define('NUMBER_EVENTS', 1000);
-define('NUMBER_LISTENERS', 1000);
+$dotenv = new Dotenv();
+$dotenv->load(__DIR__.'/.env');
+
+define('NUMBER_EVENTS', getenv('BOUNCE_EVENTS'));
+define('NUMBER_LISTENERS', getenv('BOUNCE_LISTENERS'));
 
 $counter = new StdClass;
 
@@ -22,9 +29,9 @@ $listeners = function($counter) {
     }
 };
 
-$events = ['foo', 'bar', 'baz', 'bal', 'bom'];
+$events = ['foo.bar', 'bar.foo', 'foo.baz', 'bal', 'bom'];
 $emitter = Bounce::emitter();
-$emitter->addListeners('*', $listeners($counter));
+$emitter->addListeners(new EventType(Named::class), $listeners($counter));
 
 $eventRounds = ceil(NUMBER_EVENTS / count($events));
 
