@@ -69,12 +69,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/bounceio/emitter.git",
-                "reference": "0f93a1375ec989bb926e8dbf22e567a1a6a47924"
+                "reference": "86683b4e6e70f90a910660416747dc6a1b2945f5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/bounceio/emitter/zipball/0f93a1375ec989bb926e8dbf22e567a1a6a47924",
-                "reference": "0f93a1375ec989bb926e8dbf22e567a1a6a47924",
+                "url": "https://api.github.com/repos/bounceio/emitter/zipball/86683b4e6e70f90a910660416747dc6a1b2945f5",
+                "reference": "86683b4e6e70f90a910660416747dc6a1b2945f5",
                 "shasum": ""
             },
             "require": {
@@ -118,7 +118,7 @@
                 "event",
                 "event bus"
             ],
-            "time": "2017-09-19T13:08:44+00:00"
+            "time": "2017-09-19T14:40:11+00:00"
         },
         {
             "name": "eventbus-interop/eventbus-interop",
